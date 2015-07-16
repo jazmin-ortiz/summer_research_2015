@@ -13,10 +13,15 @@
 *    option specified), it reads in the file and uses that to reconstruct
 *    the full hierarchical tree. 
 * 
-*    The internal representation of the tree is a one-dimension   
-*
-*
-*
+*    The internal representation of the tree is a one-dimensional array of structs. 
+*    each struct contains the index of both children, and the index of the parent.  
+*    The data is representeted as size_ts, because we don't know how big this is going
+*    to get, and we are using a vector, so we can't use pointers to represent the 
+*    index.  The booleans leftChild_ and rightChild_ are used to check if the children
+*    are set.  For a parent, it is possible to just initialize every parent to 0.  In that
+*    way we can check if the parent is set, because 0 is necessarily a leaf, and no one's 
+*    parent.  The same cannot be said of children nodes.  
+*    
 */
 
 
@@ -55,6 +60,17 @@ public:
     
     int height_;                   // The height of the node from the bottom of the tree. 
                                   // contains the height of the maximum daughter node + 1. 
+
+    //Our default constructor creates a struct with all values set to 0. 
+    Record()
+    {
+      leftChild_ = false;
+      rightChild_ = false; 
+      left_ = 0; 
+      right_ = 0; 
+      parent_ = 0; 
+      height_ = 0; 
+    }
   };
 
   /* Sets the parent's node to the child. */ 
@@ -109,6 +125,11 @@ public:
    * 
    */ 
   void readIn(std::ifstream& inputstream);
+
+  /* Prints out the ClusterTree_ data struture, with each line 
+   *     containing the index of the parent within the array. */ 
+
+  void printChildren(size_t parent); 
  
 private:
 

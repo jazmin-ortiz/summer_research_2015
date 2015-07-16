@@ -28,20 +28,23 @@ ClusterParse::~ClusterParse()
 
 /* Given a child node and a parent node, sets the parent's
  *    child node, if one is available, and throws an error if
- *    one is not. 
- */ 
+ *    one is not.  */ 
 
 void ClusterParse::setChild(size_t child, size_t parent){
+  std::cout << "Child in setChild is " << child << std::endl; 
+  std::cout << "Parent is " << parent << std::endl; 
   //If there is no left child... 
+  std::cout << leftChild(parent) << std::endl; 
   if (leftChild(parent) == false){
     //Set it.  
-      setLeftChild(parent, child);
+      setLeftChild(child, parent);
   } 
   else {
     //If there is a left child, but no right child
       if(rightChild(parent) == false){
         //set the right child instead. 
-        setRightChild(parent, child);
+        setRightChild(child, parent);
+        std::cout << "setting the right child" << std::endl; 
       } 
       else {
         //Otherwise, throw an error. 
@@ -61,6 +64,8 @@ void ClusterParse::setParent(size_t child, size_t parent){
   // a problem in our parsing of the tree. 
     if (getParent(child) != (size_t) 0 && getParent(child) != parent){
       std::cout << "The parent has already been set to another value" << std::endl; 
+      std::cout << "The previous parent was: " << getParent(child) << std::endl; 
+      std::cout << "The new parent is: " << getParent(child) << std::endl; 
     }  
     else{
       //Otherwise, we can just set the parent. 
@@ -89,9 +94,12 @@ bool ClusterParse::rightChild(size_t parent){
 
 
 void ClusterParse::setLeftChild(size_t child, size_t parent){
+  std::cout << "child is " << child << std::endl; 
+  std::cout << "parent is " << parent << std::endl; 
+  clusterTree_[parent].leftChild_ = true;  
   clusterTree_[parent].left_ = child; 
-  clusterTree_[parent].leftChild_ = true; 
-  
+  printChildren(parent);
+
   // Because we always try to set the left child first, we don't
   //     need to check if the height from the right child is greater. 
 
@@ -122,14 +130,25 @@ size_t ClusterParse::getRightChild(size_t parent){
 }
 
 size_t ClusterParse::getLeftChild(size_t parent){
-  return clusterTree_[parent].right_; 
+  return clusterTree_[parent].left_; 
 
+}
+
+void ClusterParse::printChildren(size_t parent){
+  std::cout << "###PARENT IS " << parent << "###" << std::endl; 
+  std::cout << "leftChild_ is " << clusterTree_[parent].leftChild_ <<
+               "\n Left Child is " << clusterTree_[parent].left_ << 
+               "\n rightChild_ is " << clusterTree_[parent].rightChild_ <<
+               "\n Right Child is " << clusterTree_[parent].right_ << 
+               "\n Parent is " << clusterTree_[parent].parent_ << std::endl; 
 }
 
 /*  Inserts a node, based on the line read in from a cluto output record. 
  *     NOTE:  Should check for a valid parent value before it is added. 
  */ 
 void ClusterParse::insert(size_t child, size_t parent){
+  std::cout << "Child in insert is " << child << 
+               "\n Parent in insert is " << parent << std::endl; 
   //First, we check and see if the vector is large enough. 
   size_t vectorSize = clusterTree_.size(); 
 
@@ -138,7 +157,11 @@ void ClusterParse::insert(size_t child, size_t parent){
       //  we increase the size until the vector can contain
       //  the parent. 
         for (size_t i = 0; i <= (parent - vectorSize); ++i){
-          Record newRecord; 
+          Record newRecord;  
+          newRecord.height_ = 0; 
+          newRecord.leftChild_ = false;
+          newRecord.rightChild_ = false; 
+          newRecord.parent_ = 0; 
           clusterTree_.push_back(newRecord); 
         }
   }
@@ -199,9 +222,6 @@ void ClusterParse::readIn(ifstream& inputstream)
   inputstream.close();
 }
 
-int main(){
-  return 0; 
-}
 
 
 
