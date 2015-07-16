@@ -1,8 +1,7 @@
 /*
 * TraceSet.cpp
 *
-* Authors: Jazmin Ortiz and Elizabeth Krenkel
-* Last Modified: July 13, 2015
+* Authors: Jazmin Ortiz 
 *
 * Takes in a trace file of LBAs (in decimal)  from stdin and creates a data
 * structure to hold them.  Those two structures consist of a vector of all
