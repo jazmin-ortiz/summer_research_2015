@@ -17,12 +17,48 @@ using namespace std;
 ClusterParse::ClusterParse(){
     vector<Record> clusterArray; 
     clusterTree_ = clusterArray;  
+    numRecords_ = 0; 
 }
 
 // Destructor for the ClusterParse
-ClusterParse::~ClusterParse()
-{
+ClusterParse::~ClusterParse(){
   // Do nothing here
+}
+
+std::ostream& ClusterParse::printTree(std::ostream& out){
+  /* Most of the work for this function is done in printNode, recursively. 
+   * This is just a wrapper function. */ 
+  return printNode(numRecords_, out); 
+}
+
+std::ostream& ClusterParse::printNode(size_t node, std::ostream& out){
+
+  bool left = leftChild(node);
+  bool right = rightChild(node); 
+
+  if (left == false && right == false){
+  /* We begin by checking if we are at a leaf. 
+   * If we are, we print the associated number. */ 
+      out << node; 
+      out << ", ";
+  }
+  else{
+      if (left == true && right == false){
+          /*If we have a left tree, but no right, print the left subtree */
+          printNode(getLeftChild(node), out);
+      }
+      if (left == true && right == true){
+        /*If we have both, print both subtrees */ 
+        printNode(getLeftChild(node), out);
+        printNode(getRightChild(node), out);
+      }
+      else{
+        /* If we just have the right, print that one. */ 
+        printNode(getRightChild(node), out); 
+      }
+  }
+
+  return out; 
 }
 
 
@@ -30,9 +66,7 @@ ClusterParse::~ClusterParse()
  *    child node, if one is available, and throws an error if
  *    one is not.  */ 
 
-void ClusterParse::setChild(size_t child, size_t parent){
-  std::cout << "Child in setChild is " << child << std::endl; 
-  std::cout << "Parent is " << parent << std::endl; 
+void ClusterParse::setChild(size_t child, size_t parent){ 
   //If there is no left child... 
   std::cout << leftChild(parent) << std::endl; 
   if (leftChild(parent) == false){
@@ -44,7 +78,6 @@ void ClusterParse::setChild(size_t child, size_t parent){
       if(rightChild(parent) == false){
         //set the right child instead. 
         setRightChild(child, parent);
-        std::cout << "setting the right child" << std::endl; 
       } 
       else {
         //Otherwise, throw an error. 
@@ -84,6 +117,11 @@ bool ClusterParse::leftChild(size_t parent){
     return clusterTree_[parent].leftChild_; 
 }
 
+
+
+size_t ClusterParse::getHeight(size_t node){
+  return clusterTree_[node].height_; 
+}
 /*  Returns true if there is already right child  
  *      for the parent and false if there is not. 
  */ 
@@ -94,8 +132,6 @@ bool ClusterParse::rightChild(size_t parent){
 
 
 void ClusterParse::setLeftChild(size_t child, size_t parent){
-  std::cout << "child is " << child << std::endl; 
-  std::cout << "parent is " << parent << std::endl; 
   clusterTree_[parent].leftChild_ = true;  
   clusterTree_[parent].left_ = child; 
   printChildren(parent);
@@ -147,8 +183,8 @@ void ClusterParse::printChildren(size_t parent){
  *     NOTE:  Should check for a valid parent value before it is added. 
  */ 
 void ClusterParse::insert(size_t child, size_t parent){
-  std::cout << "Child in insert is " << child << 
-               "\n Parent in insert is " << parent << std::endl; 
+  numRecords_ += 1; 
+
   //First, we check and see if the vector is large enough. 
   size_t vectorSize = clusterTree_.size(); 
 
@@ -209,6 +245,10 @@ void ClusterParse::readIn(ifstream& inputstream)
           insert(counter, stoi(parentIndex));
           parentIndex = "";
        } 
+      else {
+          //We keep track of the root by making its "parent" itself.
+          clusterTree_[counter].parent_ = counter; 
+       }
       //If we are at the root, then we are done. 
       parentIndex = ""; 
     }

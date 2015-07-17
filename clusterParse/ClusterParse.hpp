@@ -100,6 +100,9 @@ public:
    */ 
   size_t getRightChild(size_t parent); 
 
+  /* Returns the height from the bottom of the tree of the node passed  */ 
+  size_t getHeight(size_t node); 
+
   /* Returns the parent of the specified child node if set, 0 otherwise. */ 
 
   size_t getParent(size_t child); 
@@ -116,6 +119,12 @@ public:
    *     the parent node to the array, and sets the child_ and parent_
    *     data members of both nodes appropriately.       
   */ 
+
+  std::ostream& printTree(std::ostream& out); 
+
+
+  std::ostream& printNode(size_t node, std::ostream& out); 
+
 
   void insert(size_t child, size_t parent);
 
@@ -139,6 +148,8 @@ private:
    *      its children in the tree.    
    */ 
   std::vector<Record> clusterTree_;
+
+  size_t numRecords_; 
 
 
 };
