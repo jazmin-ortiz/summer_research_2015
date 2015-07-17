@@ -383,27 +383,31 @@ TEST(fix_PBAS, large)
 TEST(change_PBAs, first_from_middle)
 {
 
-    TraceSet trace;
     TraceSet trace_test;
-
-    // Insert different elements as first element trace set objects
-    trace.insert("0");
-    trace_test.insert("10");
 
     // Insert elements into the traceset objects
     string s;
     size_t value;
-    for(size_t i = 0; i < 10; ++i) {
+
+    for(size_t i = 0; i < 5; ++i) {
 
         value = i;
         s = to_string(value);
-
-        trace.insert(s);
         trace_test.insert(s);
 
     }
 
-    // element as second to last element in objects
+     // Access data members of trace_test and trace
+     vector<TraceSet::blockLBA>& trace_test_mapLBA = trace_test.get_mapLBA();
+     vector<TraceSet::blockPBA>& trace_test_mapPBA = trace_test.get_mapPBA();
+
+     // Switch values in trace_test so that the instead of the LBA 0 being
+     // at PBA 0 LBA 0 is now at PBA 4 and LBA 4 is at PBA 0
+     trace_test_mapLBA[2].PBA = 0;
+     trace_test_mapLBA[0].PBA = 2;
+
+     trace_test_mapPBA[0].LBA = 2;
+     trace_test_mapPBA[2].LBA = 0;
 
     // Create a vector of 1 element to insert
     vector<size_t> to_insert;
@@ -411,48 +415,60 @@ TEST(change_PBAs, first_from_middle)
     // Set value of element in vector
     to_insert.push_back(0);
 
-    // call change_PBA
-    vector<TraceSet::blockPBA>& trace_test_mapPBA = trace_test.get_mapPBA();
-    cout << "mapPBA values before change_PBA" << endl;
-    for(size_t i = 0; i < 12; ++i) {
+      cout << "LBAs before chang_order" << endl;
+    for (size_t i = 0; i < trace_test_mapPBA.size(); ++i) {
         cout << trace_test_mapPBA[i].LBA <<endl;
     }
-    trace_test.change_PBAs(to_insert, 0);
 
-    // Get the provate data members from both the traceset and trace_set test
-    vector<TraceSet::blockLBA>& trace_mapLBA = trace.get_mapLBA();
-    vector<TraceSet::blockLBA>& trace_test_mapLBA = trace_test.get_mapLBA();
+    // call change_PBA, which should change the LBA 0 to be at location 0, which
+    // if it operates it properly will cause the data members of trace_test to
+    // t be equivalent to that of trace
+    trace_test.change_order_PBA(to_insert, 0);
 
-    vector<TraceSet::blockPBA>& trace_mapPBA = trace.get_mapPBA();
-    //vector<TraceSet::blockPBA>& trace_test_mapPBA = trace_test.get_mapPBA();
+    cout << "LBAs after chang_order" << endl;
+    for (size_t i = 0; i < trace_test_mapPBA.size(); ++i) {
+        cout << trace_test_mapPBA[i].LBA <<endl;
+    }
+
+    cout << "PBAs after chang_order" << endl;
+    for (size_t i = 0; i < trace_test_mapPBA.size(); ++i) {
+        cout << trace_test_mapLBA[i].PBA <<endl;
+    }
 
     // Check that fix_PBAs reset the values properly
-    for(int i = 0; i < 12; ++i) {
+    assert(trace_test_mapPBA[0].LBA == 0);
+    assert(trace_test_mapLBA[0].PBA == 0);
 
-        assert(trace_test_mapLBA[i].PBA == trace_mapLBA[i].PBA);
-        assert(trace_test_mapPBA[i].LBA == trace_mapPBA[i].LBA);
+    cout << trace_test_mapLBA[2].PBA <<endl;
 
+    assert(trace_test_mapPBA[1].LBA == 2);
+    assert(trace_test_mapLBA[2].PBA == 1);
+
+    assert(trace_test_mapPBA[2].LBA == 1);
+    assert(trace_test_mapLBA[1].PBA == 2);
+
+    assert(trace_test_mapPBA[3].LBA == 3);
+    assert(trace_test_mapLBA[3].PBA == 3);
+
+    assert(trace_test_mapPBA[4].LBA == 4);
+    assert(trace_test_mapLBA[4].PBA == 4);
+
+    for(int i = 0; i < 5; ++i) {
         assert(trace_test_mapLBA[i].used == true);
         assert(trace_test_mapPBA[i].used == true);
     }
 
     // Make sure that the sizes of the traceset objects vectors are equal and
     // have a valid size
-
-    // make sure that the sizes are correct
-    cout << "mapPBA values after change_PBA" << endl;
-    for(size_t i = 0; i < 12; ++i) {
-        cout << trace_test_mapPBA[i].LBA <<endl;
-    }
-    assert(trace_test_mapLBA.size() > 11);
+    assert(trace_test_mapLBA.size() > 5);
     assert(trace_test_mapLBA.size() == trace_test_mapPBA.size());
 
     // Check to make sure that indices within the array that should have not
     // been used are not used.
-    for(size_t i = 12; i < trace_test_mapPBA.size(); ++i) {
+    for(size_t i = 5; i < trace_test_mapPBA.size(); ++i) {
 
-        assert(trace_mapPBA[i].used == false);
-        assert(trace_mapLBA[i].used == false);
+        assert(trace_test_mapPBA[i].used == false);
+        assert(trace_test_mapLBA[i].used == false);
     }
 
 }

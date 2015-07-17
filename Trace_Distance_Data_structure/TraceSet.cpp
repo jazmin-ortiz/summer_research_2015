@@ -1,7 +1,7 @@
 /*
 * TraceSet.cpp
 *
-* Authors: Jazmin Ortiz 
+* Authors: Jazmin Ortiz
 *
 * Takes in a trace file of LBAs (in decimal)  from stdin and creates a data
 * structure to hold them.  Those two structures consist of a vector of all
@@ -331,8 +331,56 @@ size_t TraceSet::find_total_distance()
  * preserved.
  *
  */
-void TraceSet::change_PBAs(vector<size_t> LBA_vector, size_t start)
+void TraceSet::change_order_PBA(vector<size_t> LBA_vector, size_t start)
 {
+
+  // Call to a helper function that will remove the blockPBAs associated with
+  // the LBAs in LBA_vector from the blockPBA_ data member
+  shift_PBAs_up(LBA_vector);
+
+  vector<blockPBA> LBAs;
+  blockPBA LBA_to_add;
+
+  // Iterates through and creates a blockPBA for each LBA in the LBA_vector,
+  // ordering of the LBAs is the same both the LBA_vector and PBAs.
+  for(size_t i = 0; i < LBA_vector.size(); ++i) {
+
+    LBA_to_add.LBA = LBA_vector[i];
+    LBA_to_add.used = true;
+
+    LBAs.push_back(LBA_to_add);
+  }
+
+  // Initializes an iterator for the mapLBA_ vector and then moves it so that it
+  // is pointing at the object at index start.
+  vector<blockPBA>::iterator start_location = mapPBA_.begin();
+  advance(start_location, start);
+
+  // Inserts the vector LBAs in the mapPBA_ data member right before
+  // the iterator start_location
+
+  mapPBA_.insert(start_location, LBAs.begin(), LBAs.end());
+
+  // The ordering of the LBAs and the associated PBAs is now correct in
+  // mapPBA_, the helper function fix_PBAs() is now run to fix any discrepancies
+  // that may have occured in the LBA-PBA pairs in the mapLBA_ data structure
+  // due to the movement of blocks need to place the LBAs in LBA_vector in the
+  // correct position in the mapPBA_ vector.
+
+  fix_PBAs();
+
+}
+
+/**
+ * function: shift_PBAs_up
+ *
+ * This is a helper function for change_order_PBAs that takes in a vector of
+ * size_ts that represent LBAs and removes the blockPBA struct associated with
+ * these LBAs from the mapPBA vector.
+ *
+ */
+void TraceSet::shift_PBAs_up(vector<size_t> LBA_vector)
+ {
 
   // loops through LBA_vector, finds the PBA associated with each LBA and then
   // inserts the LBA and its associated PBA as a key-value pair into
@@ -364,10 +412,11 @@ void TraceSet::change_PBAs(vector<size_t> LBA_vector, size_t start)
 
     associated_LBA = mapPBA_[i].LBA;
 
-    // checks to see if the LBA associated with the PBA is in PBA_hashtable, if
-    // so increments the counter. Otherwise simply moves the current block up
-    // mum_positions places in mapPBA_
-    if (PBA_hashtable.count(associated_LBA)) {
+    // checks to see if the LBA associated with the PBA is in PBA_hashtable and
+    // the PBA has been used, if both of these are true then the counter is
+    // incremented. Otherwise this simply moves the current block up
+    // num_positions places in mapPBA_
+    if (PBA_hashtable.count(associated_LBA) && mapPBA_[i].used) {
 
       ++num_positions;
 
@@ -382,34 +431,16 @@ void TraceSet::change_PBAs(vector<size_t> LBA_vector, size_t start)
     }
   }
 
-  vector<blockPBA> LBAs;
-  blockPBA LBA_to_add;
-
-  // Iterates through and creates a blockPBA for each LBA in the LBA_vector,
-  // ordering of the LBAs is the same both the LBA_vector and PBAs.
+  // Now that blocks in mapPBA have been shifted up apropriately, we know that
+  // all the mapPBA blocks associated with the elements in LBA_vector have been
+  // overwritten and therefore the last LBA_vector.size() elements in the mapPBA
+  // vector do not contain anything since that is the number of blocks that have
+  // been moved up, those elements will now be removed.
   for(size_t i = 0; i < LBA_vector.size(); ++i) {
 
-    LBA_to_add.LBA = LBA_vector[i];
-    LBA_to_add.used = true;
+    mapPBA_.pop_back();
 
-    LBAs.push_back(LBA_to_add);
   }
-
-  // Initializes an iterator for the mapLBA_ vector and then moves it so that it
-  // is pointing at the object at index start.
-  vector<blockPBA>::iterator start_location = mapPBA_.begin();
-  advance(start_location, start);
-
-  // Inserts the vector LBAs in the mapPBA_ data member right before
-  // the iterator start_location
-  mapPBA_.insert(start_location, LBAs.begin(), LBAs.end());
-
-  // The ordering of the LBAs and the associated PBAs is now correct in
-  // mapPBA_, the helper function fix_PBAs() is now run to fix any discrepancies
-  // that may have occured in the LBA-PBA pairs in the mapLBA_ data structure
-  // due to the movement of blocks need to place the LBAs in LBA_vector in the
-  // correct position in the mapPBA_ vector.
-  fix_PBAs();
 
 }
 

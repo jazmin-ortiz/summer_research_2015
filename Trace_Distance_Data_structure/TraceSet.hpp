@@ -1,8 +1,7 @@
 /**
-* \file TraceSet.hpp
+* TraceSet.hpp
 *
-* Authors: Jazmin Ortiz and Elizabeth Krenkel
-* Last Modified: July 13, 2015
+* Authors: Jazmin Ortiz
 *
 * This is a class callled TraceSet, this class was made to test algorithms that
 * try to optimize the location of memory on the disk. This class is made up of
@@ -148,7 +147,17 @@ public:
   ///
   /// The PBAs of the LBAs that are not in the input vector will then be
   /// shifted so that no LBAs have the same PBA.
-  void change_PBAs(std::vector<std::size_t> LBA_vector, std::size_t start);
+  void change_order_PBA(std::vector<std::size_t> LBA_vector, std::size_t start);
+
+  /// This is a helper function for change_PBAS, the function takes in a
+  /// a vector of size_ts, LBA_vector, and removes the blockPBA struct
+  /// associated these LBAs from the mapPBA vector while still preserving the
+  /// structure and spacing of the other PBAs
+  ///
+  /// The function takes the vector of size_ts which represent LBAS and finds
+  /// the PBA associated with each LBA in the vector LBAs and removes it from
+  /// the mapPBA_ data member of trace_to_consider.
+  void shift_PBAs_up(std::vector<std::size_t> LBA_vector);
 
   /// This is a helper function for change_PBAs when this is run it goes through
   /// TraceSet object and makes sure that each for any given LBA that it is
@@ -164,7 +173,7 @@ private:
   // the entirety of the trace, and the index of the next instance of that
   // LBA in the trace.
   std::vector<Line> Sequence_;
-
+  
   // mapLBA_ is a vector of structs that contain (1) the LBA of everything
   // in the trace, (2) the physical block address that each LBA maps to, and
   // (3) the index of the first and last instance of that address within the
