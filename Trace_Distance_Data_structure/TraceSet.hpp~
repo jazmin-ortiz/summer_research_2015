@@ -1,8 +1,7 @@
 /**
-* \file TraceSet.hpp
+* TraceSet.hpp
 *
-* Authors: Jazmin Ortiz and Elizabeth Krenkel
-* Last Modified: July 13, 2015
+* Authors: Jazmin Ortiz
 *
 * This is a class callled TraceSet, this class was made to test algorithms that
 * try to optimize the location of memory on the disk. This class is made up of

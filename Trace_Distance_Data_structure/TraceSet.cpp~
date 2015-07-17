@@ -1,8 +1,7 @@
 /*
 * TraceSet.cpp
 *
-* Authors: Jazmin Ortiz and Elizabeth Krenkel
-* Last Modified: July 13, 2015
+* Authors: Jazmin Ortiz 
 *
 * Takes in a trace file of LBAs (in decimal)  from stdin and creates a data
 * structure to hold them.  Those two structures consist of a vector of all
@@ -60,7 +59,7 @@ vector<TraceSet::Line>& TraceSet::get_Sequence()
  */
 vector<TraceSet::blockLBA>& TraceSet::get_mapLBA()
 {
-  vector<TraceSet::blockLBA>& blockLBAs = mapLBA_;
+  vector<blockLBA>& blockLBAs = mapLBA_;
 
   return blockLBAs;
 }
@@ -72,7 +71,7 @@ vector<TraceSet::blockLBA>& TraceSet::get_mapLBA()
  */
 vector<TraceSet::blockPBA>& TraceSet::get_mapPBA()
 {
-  vector<TraceSet::blockPBA>& blockPBAs = mapPBA_;
+  vector<blockPBA>& blockPBAs = mapPBA_;
 
   return blockPBAs;
 }
@@ -338,9 +337,6 @@ void TraceSet::change_PBAs(vector<size_t> LBA_vector, size_t start)
   // loops through LBA_vector, finds the PBA associated with each LBA and then
   // inserts the LBA and its associated PBA as a key-value pair into
   // PBA_hashtable, where the LBA is used as the key.
-  //
-  // A hash table to contain all of the LBAs that are in LBA_vector and size_ts
-  // to hold each LBA and its corresponding PBA.
   unordered_map<size_t, size_t> PBA_hashtable;
   size_t current_LBA;
   size_t LBAs_PBA;
@@ -356,10 +352,11 @@ void TraceSet::change_PBAs(vector<size_t> LBA_vector, size_t start)
   }
 
   // Loops through the mapPBA_ data member and checks the LBA associated with
-  // each PBA to see if thier LBA is in the hash table, if so the PBA of that
+  // each PBA to see if thier LBA is in the hash table. If so the PBA of that
   // LBA will be changed, and that blockPBA will be reinserted later. Therefore
-  // The num_positions counter is incremented by 1 and all blocks after that
-  // are moved up by the num_positions counter
+  // the num_positions counter is incremented by 1 and all blocks after that
+  // are moved up by num_positions and overwrites that block since it will be
+  // inserted in mapPBA_ again and be reassigned a PBA
   size_t num_positions = 0;
   size_t associated_LBA;
   blockPBA current_blockPBA;
@@ -412,6 +409,7 @@ void TraceSet::change_PBAs(vector<size_t> LBA_vector, size_t start)
   // that may have occured in the LBA-PBA pairs in the mapLBA_ data structure
   // due to the movement of blocks need to place the LBAs in LBA_vector in the
   // correct position in the mapPBA_ vector.
+  fix_PBAs();
 
 }
 

@@ -64,10 +64,14 @@ TEST(insert, all_same)
         assert(testSequence[i].next == i+1);
         assert(testSequence[i].LBA == 1);
     }
+
+    // Make sure that the vectors resize properly
+    assert(testMapLBA.size() > 1);
+    assert(testMapPBA.size() == testMapPBA.size());
 }
 
 /// Test insert when taking in many different characters
-TEST(insert, different_forward)
+TEST(insert, different)
 {
     TraceSet test;
 
@@ -97,7 +101,7 @@ TEST(insert, different_forward)
 
     }
     assert(testMapLBA.size() > 48);
-    assert(testMapPBA.size() > 48);
+    assert(testMapPBA.size() == testMapLBA.size());
 }
 
 /// Test insert when taking in many different characters
@@ -105,15 +109,15 @@ TEST(insert, different_large)
 {
     TraceSet test;
 
-    // insert 50 of the different characters
+    // insert 1000 of the different characters
     string s;
-    for(int i = 0; i < 50; ++i) {
+    for(int i = 0; i < 1000; ++i) {
         s = to_string(i);
         test.insert(s);
     }
 
-    // insert the same 50 characters inserted above again
-    for(int i = 0; i < 50; ++i) {
+    // insert the same 1000 characters inserted above again
+    for(int i = 0; i < 10000; ++i) {
         s = to_string(i);
         test.insert(s);
     }
@@ -123,22 +127,22 @@ TEST(insert, different_large)
     vector<TraceSet::blockPBA>& testMapPBA = test.get_mapPBA();
 
     // checks that the mapLBA_, mapPBA_ and Sequnces_ vector update sanely
-    for (size_t i = 0; i < 49; ++i) {
+    for (size_t i = 0; i < 999; ++i) {
 
          assert(testMapLBA[i].used == true);
          assert(testMapLBA[i].first == i);
-         assert(testMapLBA[i].last == i+50);
+         assert(testMapLBA[i].last == i+1000);
 
          assert(testMapPBA[i].LBA == i);
          assert(testMapPBA[i].used == true);
 
          assert(testSequence[i].LBA == i);
-         assert(testSequence[i+50].LBA == i);
+         assert(testSequence[i+1000].LBA == i);
 
     }
 
-    assert(testMapLBA.size() > 48);
-    assert(testMapPBA.size() > 48);
+    assert(testMapLBA.size() > 2000);
+    assert(testMapPBA.size() == testMapLBA.size());
 }
 
 
@@ -251,15 +255,21 @@ TEST(fix_PBAS, one)
     trace.insert(s);
     trace_test.insert(s);
 
-    // Get the private data members from both the traceset and trace_set test
+    // Get the private data members from both the traceset object
     vector<TraceSet::blockLBA>& trace_mapLBA = trace.get_mapLBA();
     vector<TraceSet::blockLBA>& trace_test_mapLBA = trace_test.get_mapLBA();
 
     vector<TraceSet::blockPBA>& trace_mapPBA = trace.get_mapPBA();
     vector<TraceSet::blockPBA>& trace_test_mapPBA = trace_test.get_mapPBA();
 
+    trace_test_mapLBA[0].PBA = 5;
+    trace_test.fix_PBAs();
+
     assert(trace_mapLBA[0].PBA == trace_test_mapLBA[0].PBA);
     assert(trace_mapPBA[0].LBA == trace_test_mapPBA[0].LBA);
+
+    // Make sure that the trace_test data members sizes remain the same
+    assert(trace_test_mapLBA.size() == trace_test_mapPBA.size());
 }
 
 /// Test to make sure that the helper function fix_PBAs() works on small cases
@@ -309,6 +319,9 @@ TEST(fix_PBAS, small)
         assert(trace_mapLBA[i].PBA == trace_test_mapLBA[i].PBA);
         assert(trace_mapPBA[i].LBA == trace_test_mapPBA[i].LBA);
     }
+
+    // Make sure that the trace_test data members sizes remain the same
+    assert(trace_test_mapLBA.size() == trace_test_mapPBA.size());
 }
 
 /// Test to make sure that the helper function fix_PBAs() works on larger cases
@@ -360,6 +373,9 @@ TEST(fix_PBAS, large)
         assert(trace_mapLBA[i].PBA == trace_test_mapLBA[i].PBA);
         assert(trace_mapPBA[i].LBA == trace_test_mapPBA[i].LBA);
     }
+
+    // Make sure that the trace_test data members sizes remain the same
+    assert(trace_test_mapLBA.size() == trace_test_mapPBA.size());
 }
 
 // Make sure that change_PBAs when changing one element in front is inserted and
@@ -370,14 +386,10 @@ TEST(change_PBAs, first_from_middle)
     TraceSet trace;
     TraceSet trace_test;
 
-    // Insert different elements as first element trace set objects
-    trace.insert("0");
-    trace_test.insert("10");
-
     // Insert elements into the traceset objects
     string s;
     size_t value;
-    for(size_t i = 1; i < 10; ++i) {
+    for(size_t i = 0; i < 10; ++i) {
 
         value = i;
         s = to_string(value);
@@ -387,13 +399,17 @@ TEST(change_PBAs, first_from_middle)
 
     }
 
-    // Insert different element as second to last element in objects
-    trace.insert("10");
-    trace_test.insert("0");
+     // Access data members of trace_test
+     vector<TraceSet::blockLBA>& trace_test_mapLBA = trace_test.get_mapLBA();
+     vector<TraceSet::blockPBA>& trace_test_mapPBA = trace_test.get_mapPBA();
 
-    //Insert same last element
-    trace.insert("11");
-    trace_test.insert("11");
+     // Switch values in trace_test so that the instead of the LBA 0 being
+     // at PBA 0 LBA 0 is now at PBA 4 and LBA 4 is at PBA 0
+     trace_test_mapLBA[0].PBA = 4;
+     trace_test_mapLBA[4].PBA = 0;
+
+     trace_test_mapPBA[0].LBA = 4;
+     trace_test_mapPBA[4].LBA = 0;
 
     // Create a vector of 1 element to insert
     vector<size_t> to_insert;
@@ -401,32 +417,62 @@ TEST(change_PBAs, first_from_middle)
     // Set value of element in vector
     to_insert.push_back(0);
 
-    // call change_PBA
+    // call change_PBA, which should change the LBA 0 to be at location 0, which
+    // if it operates it properly will cause the data members of trace_test to
+    // t be equivalent to that of trace
+    cout << "Size is:" <<endl;
+    cout << trace_test_mapPBA.size() <<endl;
+    cout << "mapPBA values before change_PBA" << endl;
+    for(size_t i = 0; i < trace_test_mapPBA.size(); ++i) {
+        cout<< "Is value used?" << endl;
+        cout<<trace_test_mapPBA[i].used <<endl;
+        cout << trace_test_mapPBA[i].LBA <<endl;
+    }
     trace_test.change_PBAs(to_insert, 0);
 
-    // Get the provate data members from both the traceset and trace_set test
-    vector<TraceSet::blockLBA>& trace_mapLBA = trace.get_mapLBA();
-    vector<TraceSet::blockLBA>& trace_test_mapLBA = trace_test.get_mapLBA();
-
-    vector<TraceSet::blockPBA>& trace_mapPBA = trace.get_mapPBA();
-    vector<TraceSet::blockPBA>& trace_test_mapPBA = trace_test.get_mapPBA();
-
-    // Check that fix_PBAs reset the values properly
-    for(int i = 0; i < 11; ++i) {
-
-        assert(trace_mapLBA[i].PBA == trace_test_mapLBA[i].PBA);
-        assert(trace_mapPBA[i].LBA == trace_test_mapPBA[i].LBA);
+    cout << "Size after is:" <<endl;
+    cout << trace_test_mapPBA.size() <<endl;
+    cout << "mapPBA values after change_PBA" << endl;
+    for(size_t i = 0; i < trace_test_mapPBA.size(); ++i) {
+        cout<< "Is value used?" << endl;
+        cout<<trace_test_mapPBA[i].used <<endl;
+        cout << trace_test_mapPBA[i].LBA <<endl;
     }
 
-    // make sure that the sizes are correct
-    cout << "Test mapLBA size is:" << endl;
-    cout << trace_test_mapLBA.size() <<endl;
 
-    cout << " Trace mapLBA size is:" << endl;
-    cout << trace_mapLBA.size() <<endl;
-    
-    assert(trace_mapLBA.size() == trace_test_mapLBA.size());
-    assert(trace_mapPBA.size() == trace_test_mapPBA.size());
+    // Get the private data members of trace
+    vector<TraceSet::blockLBA>& trace_mapLBA = trace.get_mapLBA();
+    vector<TraceSet::blockPBA>& trace_mapPBA = trace.get_mapPBA();
+
+    // Check that fix_PBAs reset the values properly
+    for(int i = 0; i < 10; ++i) {
+
+        assert(trace_test_mapLBA[i].PBA == trace_mapLBA[i].PBA);
+        assert(trace_test_mapPBA[i].LBA == trace_mapPBA[i].LBA);
+
+        assert(trace_test_mapLBA[i].used == true);
+        assert(trace_test_mapPBA[i].used == true);
+    }
+
+    // Make sure that the sizes of the traceset objects vectors are equal and
+    // have a valid size
+
+    // make sure that the sizes are correct
+    cout << "mapPBA values after change_PBA" << endl;
+    for(size_t i = 0; i < 12; ++i) {
+        cout << trace_test_mapPBA[i].LBA <<endl;
+    }
+    assert(trace_test_mapLBA.size() > 11);
+    assert(trace_test_mapLBA.size() == trace_test_mapPBA.size());
+
+    // Check to make sure that indices within the array that should have not
+    // been used are not used.
+    for(size_t i = 12; i < trace_test_mapPBA.size(); ++i) {
+
+        assert(trace_mapPBA[i].used == false);
+        assert(trace_mapLBA[i].used == false);
+    }
+
 }
 //--------------------------------------------------
 //           RUNNING THE TESTS
