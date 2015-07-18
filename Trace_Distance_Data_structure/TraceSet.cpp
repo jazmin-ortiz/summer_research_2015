@@ -3,14 +3,16 @@
 *
 * Authors: Jazmin Ortiz
 *
-* Takes in a trace file of LBAs (in decimal)  from stdin and creates a data
-* structure to hold them.  Those two structures consist of a vector of all
-* of the LBA as they come in (to preserve the sequence that they arrive in)
-* and an array of the LBAs, indexed by the LBA divided by the block number,
-* for ease of lookup.
+* A class that takes in a trace file of LBAs (in decimal)  from stdin and
+* creates a data structure to hold them and easily change and keep track of the
+* locations of the LBAs.
 *
 * The ultimate purpose of this data structure is to help in looking at
-* better ways to lay out the block on the disk drive
+* better ways to lay out the block on the disk drive, where the metric which
+* defines a more optimal layout of the blockd is a layout that minimizes the
+* total seek distance. The total seek distance is said to be the sum of the
+* absolute value of differences of locations associated with consecutive LBAs in
+* the Sequence_ vector.
 *
 */
 
@@ -28,7 +30,7 @@ using namespace std;
 // Default constructor for TraceSet
 TraceSet::TraceSet():
   mapLBA_{1},
-  mapPBA_{1}
+  locations_{1}
 {
   // Do nothing here`
 }
@@ -59,41 +61,43 @@ vector<TraceSet::Line>& TraceSet::get_Sequence()
  */
 vector<TraceSet::blockLBA>& TraceSet::get_mapLBA()
 {
-  vector<blockLBA>& blockLBAs = mapLBA_;
+  vector<blockLBA>& mapLBA = mapLBA_;
 
-  return blockLBAs;
+  return mapLBA;
 }
 
 /**
- * function: get_mapPBA()
+ * function: get_locations()
  *
- * Returns a reference to the mapPBA_ private data member
+ * Returns a reference to the locations_ private data member
  */
-vector<TraceSet::blockPBA>& TraceSet::get_mapPBA()
+vector<TraceSet::LBA_location>& TraceSet::get_locations()
 {
-  vector<blockPBA>& blockPBAs = mapPBA_;
+  vector<LBA_location>& locations = locations_;
 
-  return blockPBAs;
+  return locations;
 }
 
 /**
  * function: insert(string LBA_to_add)
  *
  * Takes in a string which is a LBA and adds it to the end
- * of the Sequence vector and changes the mapLBA_ and mapPBA_ vectors
+ * of the Sequence vector and changes the mapLBA_ and locations_ vectors
  * apropriately, meaning that if the LBA to insert is not currently in the
- * mapLBA_ vector that this LBA is added and sets the PBA of this LBA equal
+ * mapLBA_ vector that this LBA is added and sets the location of this LBA equal
  * to the LBA.
  *
- * NOTE This function initially sets the PBA equal to the LBA due
+ * NOTE This function initially sets the location equal to the LBA due
  * to the fact that before any algorithm is run the location of a given
  * LBA in the 1d representation of the disk should simply be the location
  * denoted by the LBA.
  *
  * NOTE: This function assumes that the trace is being read in for the first
- * time because it always sets the value of the PBA associated with a given
- * LBA equal to the PBA, which would lead to errors if that given PBA had
- * already been set.
+ * time and LBAs have not been moved to locations that correspond to values
+ * of LBAs that have not yet been used. It makes this assumption because the
+ * function always sets the value of the location associated with a given
+ * LBA equal to that LBA if the LBA has not been seen before. This could lead to 
+ * errors if that given location had already been set in to a different LBA.
  *
   */
 void TraceSet::insert(string LBA_to_add)
@@ -109,10 +113,10 @@ void TraceSet::insert(string LBA_to_add)
   Sequence_.push_back(Line_to_add);
 
   // Make sure that the LBA is in the mapLBA_vector and if it isnt
-  // resizes the mapLBA_ vector apropriately. Since the mapPBA_ vector
+  // resizes the mapLBA_ vector apropriately. Since the locations_ vector
   // contains the same information as the mapLBA vector but is instead
-  // indexed by PBA, if the mapLBA_ vector needs to be resized then the
-  // mapPBA_ vector will also need to be resized
+  // indexed by location, if the mapLBA_ vector needs to be resized then the
+  // locations_ vector will also need to be resized
   //
   // Since the last element pushed back onto Sequence_ is Line_to_add, this
   // is the index of Line_to_add
@@ -120,7 +124,7 @@ void TraceSet::insert(string LBA_to_add)
   if (added_LBA >= mapLBA_.size()) {
 
     mapLBA_.resize(2*added_LBA);
-    mapPBA_.resize(2*added_LBA);
+    locations_.resize(2*added_LBA);
 
   }
 
@@ -145,23 +149,23 @@ void TraceSet::insert(string LBA_to_add)
   }
 
    // Deals with the case that LBA_to_add has not previously been in
-   // Sequence_, which means that its PBA needs to be set in both the
-   // mapLBA_ and mapPBA_ vector.
+   // Sequence_, which means that its location needs to be set in both the
+   // mapLBA_ and locations_ vector.
    else {
 
      // Sets the data members of LBAs_blockLBA apropriately.
      LBAs_blockLBA.first = index_of_line;
-     LBAs_blockLBA.PBA = added_LBA;
+     LBAs_blockLBA.location = added_LBA;
      LBAs_blockLBA.used = true;
 
-     // Sets the data members of the blockPBA which represents the given
-     // LBA apropriately.
-     mapPBA_[added_LBA].LBA = added_LBA;
-     mapPBA_[added_LBA].used = true;
+     // Sets the data members of the LBA_location struct which represents the
+     // given LBA apropriately.
+     locations_[added_LBA].LBA = added_LBA;
+     locations_[added_LBA].used = true;
 
   }
 
-  // update last data member of the LBAs_blockMap apropriately
+  // update last data member of the LBAs_blockLBA apropriately
   LBAs_blockLBA.last = index_of_line;
 
 }
@@ -170,7 +174,7 @@ void TraceSet::insert(string LBA_to_add)
  * function: readIn(ifstream& inputstream)
  *
  * Reads in from standard in and changes the Sequence_, mapLBA_ and
- * mapPBA_ private data members apropriately using the insert function.
+ * location_ private data members apropriately using the insert function.
  */
 void TraceSet::readIn(ifstream& inputstream)
 {
@@ -189,8 +193,8 @@ void TraceSet::readIn(ifstream& inputstream)
       return;
 
     }
-    // Checks if a newline has been encountered which means that the end of
-    // the current LBA has been encountered and if so inserts it into the
+    // Checks if a newline has been encountered which means that the
+    // the current LBA has been completed and if so inserts it into the
     // Sequence_ vector.
     else if ( c == '\n' ) {
 
@@ -228,12 +232,13 @@ vector<size_t> TraceSet::get_indices(size_t LBA_to_find)
   vector<size_t> instances;
 
 
-  // BlockMap that contains information pertaining to LBA_to_find
+  // blockLBA that contains information pertaining to LBA_to_find
   struct blockLBA LBAs_BlockLBA = mapLBA_[LBA_to_find];
 
-  // Checks if there are instances of the LBA by checking the LBAs_BlockMap
-  // to see if that LBA has been used. If it has not been used returns the
-  // vector of instances.
+  // Checks if there are instances of the LBA by checking the LBAs_BlockLBA
+  // to see if that LBA has been used, if it has been used loops through and
+  // adds indices of all instance of LBA_to_find in Sequences_ to the instances
+  // vector. If it has not been used returns the vector of instances.
   if (LBAs_BlockLBA.used) {
 
     // Finds index of first instance then pushes index onto instances vector
@@ -243,7 +248,7 @@ vector<size_t> TraceSet::get_indices(size_t LBA_to_find)
     // the LBA in the Sequence_.
     //
     // Variables that will be used to loop through instances of the
-    // LBA in Sequence_.
+    // LBA in Sequeence_.
     size_t index = LBAs_BlockLBA.first;
     Line next_line = Sequence_[index];
     while (index != LBAs_BlockLBA.last) {
@@ -268,16 +273,16 @@ vector<size_t> TraceSet::get_indices(size_t LBA_to_find)
 }
 
 /**
- * function: find_total_distance()
+ * function: total_seek_distance()
  *
  * This is a function that returns the sum of the distance between two
  * consecutive access in the Sequences vector.
  *
- * The distance is said to be the absolute value of the difference of the PBAs
- * associated with the onsecutive LBAs that represent accesses in the Sequences
- * data member.
+ * The distance is said to be the absolute value of the difference of the
+ * locations associated with the consecutive LBAs that represent accesses in the 
+ * Sequence_ data member.
  */
-size_t TraceSet::find_total_distance()
+size_t TraceSet::total_seek_distance()
 {
 
   // Iterators that will be used to iterate through Sequences_.
@@ -285,29 +290,30 @@ size_t TraceSet::find_total_distance()
   vector<Line>::iterator next_it = Sequence_.begin();
   ++next_it;
 
-  // Size_ts that will be used to hold PBAs in the while looop
-  size_t current_PBA;
-  size_t next_PBA;
+  // Size_ts that will be used to hold locations in the while looop
+  size_t current_location;
+  size_t next_location;
   size_t total_distance = 0;
   while (next_it != Sequence_.end()) {
 
     // Finds the blockLBA associated with current_it and next_it and then
-    // assigns its PBA data member to respectivly to current_PBA and next_PBA
-    current_PBA = mapLBA_[current_it->LBA].PBA;
-    next_PBA = mapLBA_[next_it->LBA].PBA;
+    // assigns its location data member to respectivly to current_location
+    // and next_location
+    current_location = mapLBA_[current_it->LBA].location;
+    next_location = mapLBA_[next_it->LBA].location;
 
-    // Finds the absolute values of the difference of current_PBA and next_PBA.
-    // Since current_PBA and next_PBA are size_ts the smaller PBA must be
-    // subtracted from the larger.
-    if (current_PBA < next_PBA) {
+    // Finds the absolute values of the difference of current_location and
+    // next_location.Since current_location and next_location are size_ts the
+    // smaller location must be subtracted from the larger.
+    if (current_location < next_location) {
 
-      total_distance += next_PBA - current_PBA;
+      total_distance += next_location - current_location;
 
     }
 
     else {
 
-      total_distance += current_PBA - next_PBA;
+      total_distance += current_location - next_location;
 
     }
 
@@ -320,29 +326,29 @@ size_t TraceSet::find_total_distance()
 }
 
 /**
- * function: change_PBAs(vector<size_t> LBA_vector, size_t start)
+ * function: change_locations(vector<size_t> LBA_vector, size_t start)
  *
  * This is a function that takes in a vector of size_ts that represent LBAs and
- * the order in which to insert them and a size_t which represents the PBA that
- * should be the PBA of the first LBA in the LBA_vector, the other LBAs in
- * LBA_vector will then be assigned a contiguous set of PBAs following start.
- * The PBAs of the LBAs will be moved so that the no new PBAs will be used but
- * spaces that existed between LBAs that are not in LBA_vector will be
- * preserved.
+ * the order in which to insert them and a size_t start, which represents the
+ * location that should be the location of the first LBA in the LBA_vector, the
+ * other LBAs in LBA_vector will then be assigned a contiguous set of locations
+ * following start. The locations of the LBAs will be moved so that the no new
+ * locations will be used but spaces that existed between LBAs that are not in
+ * LBA_vector will be preserved.
  *
  */
-void TraceSet::change_order_PBA(vector<size_t> LBA_vector, size_t start)
+void TraceSet::change_locations(vector<size_t> LBA_vector, size_t start)
 {
 
-  // Call to a helper function that will remove the blockPBAs associated with
-  // the LBAs in LBA_vector from the blockPBA_ data member
-  shift_PBAs_up(LBA_vector);
+  // Call to a helper function that will remove the LBA_locations structs
+  // associated with the LBAs in LBA_vector from the locations_ data member
+  remove_LBA_locations(LBA_vector);
 
-  vector<blockPBA> LBAs;
-  blockPBA LBA_to_add;
+  vector<LBA_location> LBAs;
+  LBA_location LBA_to_add;
 
-  // Iterates through and creates a blockPBA for each LBA in the LBA_vector,
-  // ordering of the LBAs is the same both the LBA_vector and PBAs.
+  // Iterates through and creates a LBA_location struct for each LBA in the
+  // LBA_vector, ordering of the LBAs is the same both the LBA_vector and LBAs.
   for(size_t i = 0; i < LBA_vector.size(); ++i) {
 
     LBA_to_add.LBA = LBA_vector[i];
@@ -353,126 +359,130 @@ void TraceSet::change_order_PBA(vector<size_t> LBA_vector, size_t start)
 
   // Initializes an iterator for the mapLBA_ vector and then moves it so that it
   // is pointing at the object at index start.
-  vector<blockPBA>::iterator start_location = mapPBA_.begin();
+  vector<LBA_location>::iterator start_location = locations_.begin();
   advance(start_location, start);
 
-  // Inserts the vector LBAs in the mapPBA_ data member right before
-  // the iterator start_location
+  // Inserts the vector LBAs in the locations_ data member right before
+  // the iterator start_location.
+  locations_.insert(start_location, LBAs.begin(), LBAs.end());
 
-  mapPBA_.insert(start_location, LBAs.begin(), LBAs.end());
+  // The ordering of the LBAs and the associated LBA_locationss is now correct
+  // in locations_, the helper function fix_locationss() is now run to fix any
+  // discrepancies that may have occured in the LBA-location pairs in the
+  // mapLBA_ data structure due to the movement of LBA_location structs which
+  // was cause by the need to place the LBAs in LBA_vector in the
+  // correct locations in the locations_ vector.
 
-  // The ordering of the LBAs and the associated PBAs is now correct in
-  // mapPBA_, the helper function fix_PBAs() is now run to fix any discrepancies
-  // that may have occured in the LBA-PBA pairs in the mapLBA_ data structure
-  // due to the movement of blocks need to place the LBAs in LBA_vector in the
-  // correct position in the mapPBA_ vector.
-
-  fix_PBAs();
+  fix_locations();
 
 }
 
 /**
- * function: shift_PBAs_up
+ * function: remove_LBA_locations
  *
- * This is a helper function for change_order_PBAs that takes in a vector of
- * size_ts that represent LBAs and removes the blockPBA struct associated with
- * these LBAs from the mapPBA vector.
+ * This is a helper function for change_locations that takes in a vector of
+ * size_ts that represent LBAs whose LBA_location structs should be removed from
+ * the locations_ data member and removes the LBA_location structs from
+ * locations.
  *
  */
-void TraceSet::shift_PBAs_up(vector<size_t> LBA_vector)
+void TraceSet::remove_LBA_locations(vector<size_t> LBA_vector)
  {
 
-  // loops through LBA_vector, finds the PBA associated with each LBA and then
-  // inserts the LBA and its associated PBA as a key-value pair into
-  // PBA_hashtable, where the LBA is used as the key.
-  unordered_map<size_t, size_t> PBA_hashtable;
+  // loops through LBA_vector, finds the location associated with each LBA and
+  // then inserts the LBA and its associated location as a key-value pair into
+  // location_hashtable, where the LBA is used as the key.
+  unordered_map<size_t, size_t> location_hashtable;
   size_t current_LBA;
-  size_t LBAs_PBA;
+  size_t LBAs_location;
   for (size_t i = 0; i < LBA_vector.size(); ++i) {
 
     current_LBA = LBA_vector[i];
 
-    // Sets LBAs_PBA equal to the PBA that is assigned to current_LBA in the
-    // mapLBA_ data member.
-    LBAs_PBA = mapLBA_[current_LBA].PBA;
+    // Sets LBAs_location equal to the location that is assigned to current_LBA
+    // in the  mapLBA_ data member.
+    LBAs_location = mapLBA_[current_LBA].location;
 
-    PBA_hashtable.emplace(current_LBA, LBAs_PBA);
+    location_hashtable.emplace(current_LBA, LBAs_location);
   }
 
-  // Loops through the mapPBA_ data member and checks the LBA associated with
-  // each PBA to see if thier LBA is in the hash table. If so the PBA of that
-  // LBA will be changed, and that blockPBA will be reinserted later. Therefore
-  // the num_positions counter is incremented by 1 and all blocks after that
-  // are moved up by num_positions and overwrites that block since it will be
-  // inserted in mapPBA_ again and be reassigned a PBA
+  // Loops through the locations_ data member and checks the LBA associated with
+  // each location to see if it is in the hash table. If the LBA is in the hash
+  // table it should be removed. Therefore the num_positions counter is
+  // incremented by 1 and all LBA_location structs after that struct are moved
+  // up by num_positions which overwrites that LBA_location struct.
   size_t num_positions = 0;
   size_t associated_LBA;
-  blockPBA current_blockPBA;
-  for (size_t i = 0; i < mapPBA_.size(); ++i) {
+  LBA_location current_location;
+  for (size_t i = 0; i < locations_.size(); ++i) {
 
-    associated_LBA = mapPBA_[i].LBA;
+    associated_LBA = locations_[i].LBA;
 
-    // checks to see if the LBA associated with the PBA is in PBA_hashtable and
-    // the PBA has been used, if both of these are true then the counter is
-    // incremented. Otherwise this simply moves the current block up
-    // num_positions places in mapPBA_
-    if (PBA_hashtable.count(associated_LBA) && mapPBA_[i].used) {
+    // checks to see if the LBA associated with the location is in
+    // location_hashtable and if that location has been used, if both of these
+    // are true then the counter is incremented by one. Otherwise this simply
+    // moves the current LBA_location block num_positions places in locations_
+    if (location_hashtable.count(associated_LBA) && locations_[i].used) {
 
       ++num_positions;
 
     } else {
 
-      // assigns the block to move to the temp variable
-      current_blockPBA = mapPBA_[i];
+      // assigns the LBA_location to move to a temp variable
+      current_location = locations_[i];
 
-      // moves the block to the correct position
-      mapPBA_[i - num_positions] = current_blockPBA;
+      // moves the LBA_location to the correct location
+      locations_[i - num_positions] = current_location;
 
     }
   }
 
-  // Now that blocks in mapPBA have been shifted up apropriately, we know that
-  // all the mapPBA blocks associated with the elements in LBA_vector have been
-  // overwritten and therefore the last LBA_vector.size() elements in the mapPBA
-  // vector do not contain anything since that is the number of blocks that have
-  // been moved up, those elements will now be removed.
+  // Now that LBA_location in locations_ have been shifted up apropriately, we
+  // know that all LBA_location structs associated with the elements in
+  // LBA_vector have been overwritten, therefore the last LBA_vector.size()
+  // elements in the locations_ vector do not contain anything since that is the
+  // number of position all currently existing LBA_location structs have been
+  // moved up, those elements will now be removed.
   for(size_t i = 0; i < LBA_vector.size(); ++i) {
 
-    mapPBA_.pop_back();
+    locations_.pop_back();
 
   }
 
 }
 
 /**
- * function: fix_PBAs()
+ * function: fix_locations()
  *
- * This is a helper function that was created to fix descrepancies in the PBAs
- * and LBAs in the data members of the TraceSet object.
+ * This is a helper function that was created to fix descrepancies in the
+ * locations and LBAs in the data members of the TraceSet object.
  *
- * This function fixes descrepancies by iterating through the mapPBA_ data
- * member and at each index i, since mapPBA_ is indexed by PBA i represents the
- * PBA that is associated with the LBA l, whic is in the struct at that
- * position. It will then go to the index l in the mapLBA_ data member since
- * this vector is indexed by LBA, it will then access the PBA data member of the 
- * struct at this location and check if it is equal to i, if it is not equal to
- * i, then there is a descrepancy between the assignements of the LBA-PBA pair,
- * this is fixed by then setting the PBA data member in that struct equal to i.
+ * This function fixes descrepancies by iterating through the locations_ data
+ * member, since locations_ is indexed by location index i represents the
+ * location that is associated with the LBA l, which is in the LBA_location
+ * struct at that position. The function will then go to the index l in the
+ * mapLBA_ data member since this vector is indexed by LBA, it will then access
+ * the location data member of the struct at this location and check if it is
+ * equal to i, if it is not equal to i, there is a descrepancy between the
+ * assignements of the LBA-location pair across the mapLBA and locations data
+ * members,this is fixed by then setting the location data member in that struct
+ * equal to i.
  *
  */
-void TraceSet::fix_PBAs()
+void TraceSet::fix_locations()
 {
 
   size_t current_LBA;
-  for(size_t current_PBA = 0; current_PBA < mapPBA_.size(); ++current_PBA) {
+  for(size_t location = 0; location < locations_.size(); ++location) {
 
-    current_LBA = mapPBA_[current_PBA].LBA;
+    current_LBA = locations_[location].LBA;
 
-    // check to make sure the PBA is the same for any given LBA in both
-    // mapPBA_ and mapLBA_ and change the PBA in mapLBA_ if it is not.
-    if(current_PBA != mapLBA_[current_LBA].PBA) {
+    // check to make sure that used locatins are the same for any given LBA in
+    // both locations_ and mapLBA_ and change the location in mapLBA_ if it
+    // is not
+    if(location != mapLBA_[current_LBA].location && locations_[location].used) {
 
-      mapLBA_[current_PBA].PBA = current_PBA;
+      mapLBA_[current_LBA].location = location;
 
     } else {
 
@@ -481,3 +491,4 @@ void TraceSet::fix_PBAs()
     }
   }
 }
+

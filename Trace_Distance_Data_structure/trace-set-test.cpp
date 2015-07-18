@@ -24,10 +24,10 @@ TEST(constructor, default_constructor)
     TraceSet test;
     vector<TraceSet::Line>& test_sequence = test.get_Sequence();
     vector<TraceSet::blockLBA>& test_mapLBA = test.get_mapLBA();
-    vector<TraceSet::blockPBA>& test_mapPBA = test.get_mapPBA();
+    vector<TraceSet::LBA_location>& test_locations = test.get_locations();
     assert(test_sequence.empty());
 
-    assert(test_mapPBA.size() == 1);
+    assert(test_locations.size() == 1);
     assert(test_mapLBA.size() == 1);
 
 }
@@ -45,18 +45,18 @@ TEST(insert, all_same)
 
     vector<TraceSet::Line>& testSequence = test.get_Sequence();
     vector<TraceSet::blockLBA>& testMapLBA = test.get_mapLBA();
-    vector<TraceSet::blockPBA>& testMapPBA = test.get_mapPBA();
+    vector<TraceSet::LBA_location>& testlocation = test.get_locations();
 
-    // checks that the mapLBA vector updates its data members corectly
+    // checks that the mapLBA_ vector updates its data members corectly
     assert(testMapLBA[1].used == true);
     assert(testMapLBA[1].first == 0);
     assert(testMapLBA[1].last == 49);
     assert(testMapLBA[1].last == 49);
 
-    // checks that the mapPBA vector updates its data members correctly
-    assert(testMapPBA[1].LBA == 1);
-    assert(testMapPBA[1].used == true);
-    assert(testMapPBA.size() >= 1);
+    // checks that the locations_ vector updates its data members correctly
+    assert(testlocation[1].LBA == 1);
+    assert(testlocation[1].used == true);
+    assert(testlocation.size() >= 1);
 
     // checks that the Sequence_ vector updates correctly
     for (size_t i = 0; i < 49; ++i) {
@@ -67,7 +67,7 @@ TEST(insert, all_same)
 
     // Make sure that the vectors resize properly
     assert(testMapLBA.size() > 1);
-    assert(testMapPBA.size() == testMapPBA.size());
+    assert(testlocation.size() == testlocation.size());
 }
 
 /// Test insert when taking in many different characters
@@ -84,24 +84,24 @@ TEST(insert, different)
 
     vector<TraceSet::Line>& testSequence = test.get_Sequence();
     vector<TraceSet::blockLBA>& testMapLBA = test.get_mapLBA();
-    vector<TraceSet::blockPBA>& testMapPBA = test.get_mapPBA();
+    vector<TraceSet::LBA_location>& testlocation = test.get_locations();
 
-    // checks that the mapLBA_, mapPBA_ and Sequnces_ vector update sanely
-
+    // checks that the mapLBA_, locations_ and Sequences_ vectors update sanely
      for (size_t i = 0; i < 49; ++i) {
 
          assert(testMapLBA[i].used == true);
          assert(testMapLBA[i].first == i);
          assert(testMapLBA[i].last == i);
+         assert(testMapLBA[i].location == i);
 
-         assert(testMapPBA[i].LBA == i);
-         assert(testMapPBA[i].used == true);
+         assert(testlocation[i].LBA == i);
+         assert(testlocation[i].used == true);
 
          assert(testSequence[i].LBA == i);
 
     }
     assert(testMapLBA.size() > 48);
-    assert(testMapPBA.size() == testMapLBA.size());
+    assert(testlocation.size() == testMapLBA.size());
 }
 
 /// Test insert when taking in many different characters
@@ -124,17 +124,18 @@ TEST(insert, different_large)
 
     vector<TraceSet::Line>& testSequence = test.get_Sequence();
     vector<TraceSet::blockLBA>& testMapLBA = test.get_mapLBA();
-    vector<TraceSet::blockPBA>& testMapPBA = test.get_mapPBA();
+    vector<TraceSet::LBA_location>& testlocation = test.get_locations();
 
-    // checks that the mapLBA_, mapPBA_ and Sequnces_ vector update sanely
+    // checks that the mapLBA_, locations_ and Sequences_ vector update sanely
     for (size_t i = 0; i < 999; ++i) {
 
          assert(testMapLBA[i].used == true);
          assert(testMapLBA[i].first == i);
          assert(testMapLBA[i].last == i+1000);
+         assert(testMapLBA[i].location == i);
 
-         assert(testMapPBA[i].LBA == i);
-         assert(testMapPBA[i].used == true);
+         assert(testlocation[i].LBA == i);
+         assert(testlocation[i].used == true);
 
          assert(testSequence[i].LBA == i);
          assert(testSequence[i+1000].LBA == i);
@@ -142,7 +143,7 @@ TEST(insert, different_large)
     }
 
     assert(testMapLBA.size() > 2000);
-    assert(testMapPBA.size() == testMapLBA.size());
+    assert(testlocation.size() == testMapLBA.size());
 }
 
 
@@ -193,19 +194,19 @@ TEST(get_indices, different)
 
 }
 
-/// Test that find_total_distance works on 1 element
-TEST(find_distance, one)
+/// Test that total_seek_distance works on 1 element
+TEST(total_seek_distance, one)
 {
     TraceSet test;
     test.insert("1");
 
-    size_t total = test.find_total_distance();
+    size_t total = test.total_seek_distance();
     assert(total == 0);
 }
 
-/// Test that find_total_distance works for list of elements which are all the
+/// Test that total_seek_distance works for list of elements which are all the
 /// the same
-TEST(find_distance, all_same)
+TEST(total_seek_distance, all_same)
 {
     TraceSet test;
 
@@ -214,13 +215,13 @@ TEST(find_distance, all_same)
         test.insert("1");
     }
 
-    size_t total = test.find_total_distance();
+    size_t total = test.total_seek_distance();
     assert(total == 0);
 
 }
 
-/// Test that find_total_distance works for elements that are not all the same
-TEST(find_distance, different)
+/// Test that total_seek_distance works for elements that are not all the same
+TEST(total_seek_distance, different)
 {
     TraceSet test;
 
@@ -236,16 +237,17 @@ TEST(find_distance, different)
 
     }
 
-    size_t total = test.find_total_distance();
+    size_t total = test.total_seek_distance();
     assert(total == 98);
 }
 
-/// Test to make sure that the helper function fix_PBAs() works on one element
-TEST(fix_PBAS, one)
+/// Test to make sure that the helper function fix_locations() works on one
+// element
+TEST(fix_locations, one)
 {
 
     TraceSet trace;
-    TraceSet trace_test;
+    TraceSet test;
 
     // Create and insert one element in tracesset objects
     string s;
@@ -253,31 +255,32 @@ TEST(fix_PBAS, one)
     s = to_string(value);
 
     trace.insert(s);
-    trace_test.insert(s);
+    test.insert(s);
 
     // Get the private data members from both the traceset object
     vector<TraceSet::blockLBA>& trace_mapLBA = trace.get_mapLBA();
-    vector<TraceSet::blockLBA>& trace_test_mapLBA = trace_test.get_mapLBA();
+    vector<TraceSet::blockLBA>& test_mapLBA = test.get_mapLBA();
 
-    vector<TraceSet::blockPBA>& trace_mapPBA = trace.get_mapPBA();
-    vector<TraceSet::blockPBA>& trace_test_mapPBA = trace_test.get_mapPBA();
+    vector<TraceSet::LBA_location>& trace_locations = trace.get_locations();
+    vector<TraceSet::LBA_location>& test_locations = test.get_locations();
 
-    trace_test_mapLBA[0].PBA = 5;
-    trace_test.fix_PBAs();
+    test_mapLBA[2].location = 5;
+    test.fix_locations();
 
-    assert(trace_mapLBA[0].PBA == trace_test_mapLBA[0].PBA);
-    assert(trace_mapPBA[0].LBA == trace_test_mapPBA[0].LBA);
+    assert(trace_mapLBA[2].location == test_mapLBA[2].location);
+    assert(trace_locations[2].LBA == test_locations[2].LBA);
 
-    // Make sure that the trace_test data members sizes remain the same
-    assert(trace_test_mapLBA.size() == trace_test_mapPBA.size());
+    // Make sure that the Test data members sizes remain the same
+    assert(test_mapLBA.size() == test_locations.size());
 }
 
-/// Test to make sure that the helper function fix_PBAs() works on small cases
-TEST(fix_PBAS, small)
+/// Test to make sure that the helper function fix_locations() works on small
+// cases
+TEST(fix_locations, small)
 {
 
     TraceSet trace;
-    TraceSet trace_test;
+    TraceSet test;
 
     //loop through and insert elements in tracesset objects
     string s;
@@ -288,102 +291,103 @@ TEST(fix_PBAS, small)
         s = to_string(value);
 
         trace.insert(s);
-        trace_test.insert(s);
+        test.insert(s);
 
     }
 
-    // Getting a reference to the mapLBA_ object traceset_test
-    vector<TraceSet::blockLBA>& test_mapLBA = trace_test.get_mapLBA();
+    // Getting a reference to the mapLBA_ object test
+    vector<TraceSet::blockLBA>& test_mapLBA = test.get_mapLBA();
 
-    // Looping through traceset_test mapLBA and changing all of the PBAs
+    // Looping through test's mapLBA_ data members and changing all of the
+    // locations
     for (int i = 0; i < 50; ++i) {
 
-        test_mapLBA[i].PBA = 100;
+        test_mapLBA[i].location = 100;
 
     }
 
-    // Using fix_PBAS to fix the PBAs which should set them back to the
-    // original values
-    trace_test.fix_PBAs();
+    // Using fix_locations to fix the locations, which should set them back to
+    // the original values
+    test.fix_locations();
 
     // Get the provate data members from both the traceset and trace_set test
     vector<TraceSet::blockLBA>& trace_mapLBA = trace.get_mapLBA();
-    vector<TraceSet::blockLBA>& trace_test_mapLBA = trace_test.get_mapLBA();
 
-    vector<TraceSet::blockPBA>& trace_mapPBA = trace.get_mapPBA();
-    vector<TraceSet::blockPBA>& trace_test_mapPBA = trace_test.get_mapPBA();
+    vector<TraceSet::LBA_location>& trace_location = trace.get_locations();
+    vector<TraceSet::LBA_location>& test_location = test.get_locations();
 
     // Check that fix_PBAs reset the values properly
     for(int i = 0; i < 50; ++i) {
 
-        assert(trace_mapLBA[i].PBA == trace_test_mapLBA[i].PBA);
-        assert(trace_mapPBA[i].LBA == trace_test_mapPBA[i].LBA);
+        assert(trace_mapLBA[i].location == test_mapLBA[i].location);
+        assert(trace_location[i].LBA == test_location[i].LBA);
     }
 
     // Make sure that the trace_test data members sizes remain the same
-    assert(trace_test_mapLBA.size() == trace_test_mapPBA.size());
+    assert(test_mapLBA.size() == test_location.size());
 }
 
-/// Test to make sure that the helper function fix_PBAs() works on larger cases
-TEST(fix_PBAS, large)
+
+/// Test to make sure that the helper function fix_locations() works on larger
+// cases
+TEST(fix_locations, large)
 {
 
     TraceSet trace;
-    TraceSet trace_test;
+    TraceSet test;
 
     //loop through and insert elements in tracesset objects
     string s;
     size_t value;
     for(size_t i = 0; i < 1000; ++i) {
 
-        value = 1000 - i;
+        value = i;
         s = to_string(value);
 
         trace.insert(s);
-        trace_test.insert(s);
+        test.insert(s);
 
     }
 
-    // Getting a reference to the mapLBA_ object traceset_test
-    vector<TraceSet::blockLBA>& test_mapLBA = trace_test.get_mapLBA();
+    // Getting a reference to the mapLBA_ object test
+    vector<TraceSet::blockLBA>& test_mapLBA = test.get_mapLBA();
 
-    // Looping through traceset_test mapLBA and changing some of the PBAs
+    // Looping through test mapLBA_ and changing some of the locations
     int new_value;
     for (int i = 0; i < 50; ++i) {
 
         new_value = 20*i;
-        test_mapLBA[new_value].PBA = 100;
+        test_mapLBA[new_value].location = 100;
 
     }
 
-    // Using fix_PBAS to fix the PBAs which should set them back to the
-    // original values
-    trace_test.fix_PBAs();
+    // Using fix_locations to fix the locations which should set them back to
+    // the original values
+    test.fix_locations();
 
-    // Get the provate data members from both the traceset and trace_set test
+    // Get the private data members from both the trace and test
     vector<TraceSet::blockLBA>& trace_mapLBA = trace.get_mapLBA();
-    vector<TraceSet::blockLBA>& trace_test_mapLBA = trace_test.get_mapLBA();
 
-    vector<TraceSet::blockPBA>& trace_mapPBA = trace.get_mapPBA();
-    vector<TraceSet::blockPBA>& trace_test_mapPBA = trace_test.get_mapPBA();
+    vector<TraceSet::LBA_location>& trace_location = trace.get_locations();
+    vector<TraceSet::LBA_location>& test_location = test.get_locations();
 
     // Check that fix_PBAs reset the values properly
     for(int i = 0; i < 1000; ++i) {
 
-        assert(trace_mapLBA[i].PBA == trace_test_mapLBA[i].PBA);
-        assert(trace_mapPBA[i].LBA == trace_test_mapPBA[i].LBA);
+        assert(trace_mapLBA[i].location == test_mapLBA[i].location);
+        assert(trace_location[i].LBA == test_location[i].LBA);
     }
 
-    // Make sure that the trace_test data members sizes remain the same
-    assert(trace_test_mapLBA.size() == trace_test_mapPBA.size());
+    // Make sure that the test data members sizes remain the same
+    assert(test_mapLBA.size() == test_location.size());
 }
 
-// Make sure that change_PBAs when changing one element in front is inserted and
-// element previously resided in the middle of the trace object
-TEST(change_PBAs, first_from_middle)
+// Make sure that change_locations works when one element is inserted in front
+// and previously resided in the middle of the trace object
+TEST(change_locations, first_from_middle)
 {
 
-    TraceSet trace_test;
+    TraceSet test;
 
     // Insert elements into the traceset objects
     string s;
@@ -393,21 +397,21 @@ TEST(change_PBAs, first_from_middle)
 
         value = i;
         s = to_string(value);
-        trace_test.insert(s);
+        test.insert(s);
 
     }
 
      // Access data members of trace_test and trace
-     vector<TraceSet::blockLBA>& trace_test_mapLBA = trace_test.get_mapLBA();
-     vector<TraceSet::blockPBA>& trace_test_mapPBA = trace_test.get_mapPBA();
+     vector<TraceSet::blockLBA>& test_mapLBA = test.get_mapLBA();
+     vector<TraceSet::LBA_location>& test_locations = test.get_locations();
 
-     // Switch values in trace_test so that the instead of the LBA 0 being
-     // at PBA 0 LBA 0 is now at PBA 4 and LBA 4 is at PBA 0
-     trace_test_mapLBA[2].PBA = 0;
-     trace_test_mapLBA[0].PBA = 2;
+     // Switch values in test so that the instead of the LBA 0 being
+     // at location 0 LBA 0 is now at location 2 and LBA 2 is at location 0
+     test_mapLBA[2].location = 0;
+     test_mapLBA[0].location = 2;
 
-     trace_test_mapPBA[0].LBA = 2;
-     trace_test_mapPBA[2].LBA = 0;
+     test_locations[0].LBA = 2;
+     test_locations[2].LBA = 0;
 
     // Create a vector of 1 element to insert
     vector<size_t> to_insert;
@@ -415,63 +419,120 @@ TEST(change_PBAs, first_from_middle)
     // Set value of element in vector
     to_insert.push_back(0);
 
-      cout << "LBAs before chang_order" << endl;
-    for (size_t i = 0; i < trace_test_mapPBA.size(); ++i) {
-        cout << trace_test_mapPBA[i].LBA <<endl;
-    }
+    // call change_locations, which should change the LBA 0 to be at location 0
+    test.change_locations(to_insert, 0);
 
-    // call change_PBA, which should change the LBA 0 to be at location 0, which
-    // if it operates it properly will cause the data members of trace_test to
-    // t be equivalent to that of trace
-    trace_test.change_order_PBA(to_insert, 0);
+    // Check that change_locations reset the values properly
+    assert(test_locations[0].LBA == 0);
+    assert(test_mapLBA[0].location == 0);
 
-    cout << "LBAs after chang_order" << endl;
-    for (size_t i = 0; i < trace_test_mapPBA.size(); ++i) {
-        cout << trace_test_mapPBA[i].LBA <<endl;
-    }
+    assert(test_locations[1].LBA == 2);
+    assert(test_mapLBA[2].location == 1);
 
-    cout << "PBAs after chang_order" << endl;
-    for (size_t i = 0; i < trace_test_mapPBA.size(); ++i) {
-        cout << trace_test_mapLBA[i].PBA <<endl;
-    }
+    assert(test_locations[2].LBA == 1);
+    assert(test_mapLBA[1].location == 2);
 
-    // Check that fix_PBAs reset the values properly
-    assert(trace_test_mapPBA[0].LBA == 0);
-    assert(trace_test_mapLBA[0].PBA == 0);
+    assert(test_locations[3].LBA == 3);
+    assert(test_mapLBA[3].location == 3);
 
-    cout << trace_test_mapLBA[2].PBA <<endl;
-
-    assert(trace_test_mapPBA[1].LBA == 2);
-    assert(trace_test_mapLBA[2].PBA == 1);
-
-    assert(trace_test_mapPBA[2].LBA == 1);
-    assert(trace_test_mapLBA[1].PBA == 2);
-
-    assert(trace_test_mapPBA[3].LBA == 3);
-    assert(trace_test_mapLBA[3].PBA == 3);
-
-    assert(trace_test_mapPBA[4].LBA == 4);
-    assert(trace_test_mapLBA[4].PBA == 4);
+    assert(test_locations[4].LBA == 4);
+    assert(test_mapLBA[4].location == 4);
 
     for(int i = 0; i < 5; ++i) {
-        assert(trace_test_mapLBA[i].used == true);
-        assert(trace_test_mapPBA[i].used == true);
+        assert(test_mapLBA[i].used == true);
+        assert(test_locations[i].used == true);
     }
 
     // Make sure that the sizes of the traceset objects vectors are equal and
     // have a valid size
-    assert(trace_test_mapLBA.size() > 5);
-    assert(trace_test_mapLBA.size() == trace_test_mapPBA.size());
+    assert(test_mapLBA.size() > 5);
+    assert(test_mapLBA.size() == test_locations.size());
 
-    // Check to make sure that indices within the array that should have not
+    // Check to make sure that indices within the vector that should have not
     // been used are not used.
-    for(size_t i = 5; i < trace_test_mapPBA.size(); ++i) {
+    for(size_t i = 5; i < test_locations.size(); ++i) {
 
-        assert(trace_test_mapPBA[i].used == false);
-        assert(trace_test_mapLBA[i].used == false);
+        assert(test_locations[i].used == false);
+        assert(test_mapLBA[i].used == false);
     }
 
 }
+// Make sure that change_locations works when one element is inserted in front
+// and previously resided at the end of the trace object
+TEST(change_locations, first_from_end)
+{
+
+    TraceSet test;
+
+    // Insert elements into the traceset objects
+    string s;
+    size_t value;
+
+    for(size_t i = 0; i < 5; ++i) {
+
+        value = i;
+        s = to_string(value);
+        test.insert(s);
+
+    }
+
+     // Access data members of trace_test and trace
+     vector<TraceSet::blockLBA>& test_mapLBA = test.get_mapLBA();
+     vector<TraceSet::LBA_location>& test_locations = test.get_locations();
+
+     // Switch values in test so that the instead of the LBA 0 being
+     // at location 0 LBA 0 it is now at location 4 and LBA 4 is at location 0
+     test_mapLBA[4].location = 0;
+     test_mapLBA[0].location = 4;
+
+     test_locations[0].LBA = 4;
+     test_locations[4].LBA = 0;
+
+    // Create a vector of 1 element to insert
+    vector<size_t> to_insert;
+
+    // Set value of element in vector
+    to_insert.push_back(0);
+
+    // call change_locations, which should change the LBA 0 to be at location 0
+    test.change_locations(to_insert, 0);
+
+    // Check that change_locationss reset the values properly
+    assert(test_locations[0].LBA == 0);
+    assert(test_mapLBA[0].location == 0);;
+
+    assert(test_locations[1].LBA == 4);
+    assert(test_mapLBA[4].location == 1);
+
+    assert(test_locations[2].LBA == 1);
+    assert(test_mapLBA[1].location == 2);
+
+    assert(test_locations[3].LBA == 2);
+    assert(test_mapLBA[2].location == 3);
+
+    assert(test_locations[4].LBA == 3);
+    assert(test_mapLBA[3].location == 4);
+
+    for(int i = 0; i < 5; ++i) {
+        assert(test_mapLBA[i].used == true);
+        assert(test_locations[i].used == true);
+    }
+
+    // Make sure that the sizes of the traceset objects vectors are equal and
+    // have a valid size
+    assert(test_mapLBA.size() > 5);
+    assert(test_mapLBA.size() == test_locations.size());
+
+    // Check to make sure that indices within the vector that should have not
+    // been used are not used.
+    for(size_t i = 5; i < test_locations.size(); ++i) {
+
+        assert(test_locations[i].used == false);
+        assert(test_mapLBA[i].used == false);
+    }
+
+}
+
 //--------------------------------------------------
 //           RUNNING THE TESTS
 //--------------------------------------------------
@@ -490,3 +551,4 @@ int main(int argc, char** argv)
  * c-file-style: "stroustrup"
  * End:
  */
+

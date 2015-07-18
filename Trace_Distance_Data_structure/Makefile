@@ -50,4 +50,4 @@ traceloader.o: traceloader.cpp TraceSet.hpp
 # Google Test Code
 #
 gtest-all.o : gtest/gtest.h gtest/gtest-all.cc
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c gtest/gtest-all.cc 
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c gtest/gtest-all.cc
