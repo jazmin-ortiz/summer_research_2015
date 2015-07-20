@@ -8,8 +8,8 @@
 * locations of the LBAs.
 *
 * The ultimate purpose of this data structure is to help in looking at
-* better ways to lay out the block on the disk drive, where the metric which
-* defines a more optimal layout of the blockd is a layout that minimizes the
+* better ways to lay out the blocks on the disk drive, where the metric which
+* defines a more optimal layout of the blocks is a layout that minimizes the
 * total seek distance. The total seek distance is said to be the sum of the
 * absolute value of differences of locations associated with consecutive LBAs in
 * the Sequence_ vector.

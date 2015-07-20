@@ -7,7 +7,7 @@ GTEST_DIR   = gtest
 GTEST_OBJS  = gtest-all.o
 
 # Flags passed to the preprocessor.
-# We have no idea here whether pthreads is available in the system, so
+# We d not know if pthreads is available in the system, so
 # disable its use.
 CPPFLAGS += -I. -DGTEST_HAS_PTHREAD=0
 
