@@ -18,7 +18,6 @@ using namespace std;
 //--------------------------------------------------
 
 /// Test pushing back on an empty list (also tests default construction).
-
 TEST(constructor, default_constructor)
 {
     TraceSet test;
@@ -39,10 +38,11 @@ TEST(insert, all_same)
     TraceSet test;
 
     // insert 50 of the same character
-    for(size_t i = 0; i < 50; ++i) {
+    for (size_t i = 0; i < 50; ++i) {
         test.insert("1");
     }
 
+    //Get data members from the TraceSet object
     vector<TraceSet::Line>& testSequence = test.get_Sequence();
     vector<TraceSet::blockLBA>& testMapLBA = test.get_mapLBA();
     vector<TraceSet::LBA_location>& testlocation = test.get_locations();
@@ -77,11 +77,12 @@ TEST(insert, different)
 
     // insert 50 of the different characters
     string s;
-    for(int i = 0; i < 50; ++i) {
+    for (int i = 0; i < 50; ++i) {
         s = to_string(i);
         test.insert(s);
     }
 
+    // Get TraceSet data members
     vector<TraceSet::Line>& testSequence = test.get_Sequence();
     vector<TraceSet::blockLBA>& testMapLBA = test.get_mapLBA();
     vector<TraceSet::LBA_location>& testlocation = test.get_locations();
@@ -111,13 +112,13 @@ TEST(insert, different_large)
 
     // insert 1000 of the different characters
     string s;
-    for(int i = 0; i < 1000; ++i) {
+    for (int i = 0; i < 1000; ++i) {
         s = to_string(i);
         test.insert(s);
     }
 
     // insert the same 1000 characters inserted above again
-    for(int i = 0; i < 10000; ++i) {
+    for (int i = 0; i < 10000; ++i) {
         s = to_string(i);
         test.insert(s);
     }
@@ -154,14 +155,13 @@ TEST(get_indices, all_same)
     TraceSet test;
 
     // insert 50 of the same character
-    for(size_t i = 0; i < 50; ++i) {
+    for (size_t i = 0; i < 50; ++i) {
         test.insert("1");
     }
 
     vector<size_t> test_indices = test.get_indices(1);
 
     // checks that get_indices contains the correct values
-
     for (size_t i = 0; i < 50; ++i) {
 
         assert(test_indices[i] == i);
@@ -177,15 +177,16 @@ TEST(get_indices, different)
 
     // insert 50 different characters
     string s;
-    for(int i = 0; i < 50; ++i) {
+    for (int i = 0; i < 50; ++i) {
         s = to_string(i);
         test.insert(s);
     }
 
-
+    // create a vector to hold the output of get_indices
     vector<size_t> test_indices;
     for (size_t i = 0; i < 50; ++i) {
 
+        // Check that get indices has the correct values
         test_indices = test.get_indices(i);
         size_t& index = test_indices.front();
         assert(test_indices.size() == 1);
@@ -200,6 +201,7 @@ TEST(total_seek_distance, one)
     TraceSet test;
     test.insert("1");
 
+    // since there is only 1 element the seek distance should be 0
     size_t total = test.total_seek_distance();
     assert(total == 0);
 }
@@ -211,10 +213,11 @@ TEST(total_seek_distance, all_same)
     TraceSet test;
 
     // insert 50 of the same character
-    for(size_t i = 0; i < 50; ++i) {
+    for (size_t i = 0; i < 50; ++i) {
         test.insert("1");
     }
 
+    // Since all elements are the same the total seek distance should be 0
     size_t total = test.total_seek_distance();
     assert(total == 0);
 
@@ -237,11 +240,13 @@ TEST(total_seek_distance, different)
 
     }
 
+    // Since there is a total of 50 elements each of which are a distance 2
+    // apart from one another, the total seek distance should be 98
     size_t total = test.total_seek_distance();
     assert(total == 98);
 }
 
-/// Test to make sure that the helper function fix_locations() works on one
+// Test to make sure that the helper function fix_locations() works on one
 // element
 TEST(fix_locations, one)
 {
@@ -264,9 +269,16 @@ TEST(fix_locations, one)
     vector<TraceSet::LBA_location>& trace_locations = trace.get_locations();
     vector<TraceSet::LBA_location>& test_locations = test.get_locations();
 
+    // Change the locations member of mapLBA_
     test_mapLBA[2].location = 5;
+
+    // Call fix locations which when it sees a discrepancy in locations between
+    // the mapLBA_ and locations_ data member change the mapLBA_ data member to
+    // match the location in the locations_ data member
     test.fix_locations();
 
+    // If fix_locations() works properly the location held in mapLBA
+    // should be changed back to its previous value
     assert(trace_mapLBA[2].location == test_mapLBA[2].location);
     assert(trace_locations[2].LBA == test_locations[2].LBA);
 
@@ -307,13 +319,13 @@ TEST(fix_locations, small)
     }
 
     // Using fix_locations to fix the locations, which should set them back to
-    // the original values
+    // the original values in mapLBA_
     test.fix_locations();
 
-    // Get the provate data members from both the traceset and trace_set test
+    // Get the private data members from both the traceset and trace_set test
     vector<TraceSet::blockLBA>& trace_mapLBA = trace.get_mapLBA();
-
     vector<TraceSet::LBA_location>& trace_location = trace.get_locations();
+
     vector<TraceSet::LBA_location>& test_location = test.get_locations();
 
     // Check that fix_PBAs reset the values properly
@@ -367,8 +379,8 @@ TEST(fix_locations, large)
 
     // Get the private data members from both the trace and test
     vector<TraceSet::blockLBA>& trace_mapLBA = trace.get_mapLBA();
-
     vector<TraceSet::LBA_location>& trace_location = trace.get_locations();
+
     vector<TraceSet::LBA_location>& test_location = test.get_locations();
 
     // Check that fix_PBAs reset the values properly
@@ -413,13 +425,14 @@ TEST(change_locations, first_from_middle)
      test_locations[0].LBA = 2;
      test_locations[2].LBA = 0;
 
-    // Create a vector of 1 element to insert
+    // Create a vector to hold 1 size_t to insert
     vector<size_t> to_insert;
 
-    // Set value of element in vector
+    // push_back the size_t to insert
     to_insert.push_back(0);
 
-    // call change_locations, which should change the LBA 0 to be at location 0
+    // call change_locations, which should change the LBA 0 which is held in the
+    // vector to_insert to be at location 0
     test.change_locations(to_insert, 0);
 
     // Check that change_locations reset the values properly
@@ -457,6 +470,7 @@ TEST(change_locations, first_from_middle)
     }
 
 }
+
 // Make sure that change_locations works when one element is inserted in front
 // and previously resided at the end of the trace object
 TEST(change_locations, first_from_end)
@@ -488,13 +502,14 @@ TEST(change_locations, first_from_end)
      test_locations[0].LBA = 4;
      test_locations[4].LBA = 0;
 
-    // Create a vector of 1 element to insert
+    // Create a vector to hold 1 size_t to insert
     vector<size_t> to_insert;
 
-    // Set value of element in vector
+    // push_back the size_t to insert
     to_insert.push_back(0);
 
-    // call change_locations, which should change the LBA 0 to be at location 0
+    // call change_locations, which should change the LBA 0 which is held in
+    // vector to_insert to be at location 0
     test.change_locations(to_insert, 0);
 
     // Check that change_locationss reset the values properly
@@ -522,12 +537,14 @@ TEST(change_locations, first_from_end)
     // have a valid size
     assert(test_mapLBA.size() > 5);
     assert(test_mapLBA.size() == test_locations.size());
+
     // Check to make sure that indices within the vector that should have not
     // been used are not used.
     for(size_t i = 5; i < test_locations.size(); ++i) {
 
         assert(test_locations[i].used == false);
         assert(test_mapLBA[i].used == false);
+
     }
 
 }
@@ -551,15 +568,15 @@ TEST(change_locations, last_from_begining)
 
     }
 
-     // Access data members of trace_test and trace
+     // Access data members of test
      vector<TraceSet::blockLBA>& test_mapLBA = test.get_mapLBA();
      vector<TraceSet::LBA_location>& test_locations = test.get_locations();
 
 
-    // Create a vector of 1 element to insert
+    // Create a vector to hold 1 size_t to insert
     vector<size_t> to_insert;
 
-    // Set value of element in vector
+    // push_back the sixze_t to insert
     to_insert.push_back(0);
 
     // call change_locations, which should change the LBA 0 to be at location 0
@@ -623,13 +640,14 @@ TEST(change_locations, last_from_middle)
      vector<TraceSet::LBA_location>& test_locations = test.get_locations();
 
 
-    // Create a vector of 1 element to insert
+    // Create a vector to hold 1 size_t to insert
     vector<size_t> to_insert;
 
-    // Set value of element in vector
+    // push_back the size_t onto the vector
     to_insert.push_back(3);
 
-    // call change_locations, which should change the LBA 0 to be at location 0
+    // call change_locations, which should change the LBA 0 which is held in
+    // the vector to_insert to be at location 0
     test.change_locations(to_insert, 4);
 
     // Check that change_locationss reset the values properly
@@ -657,6 +675,7 @@ TEST(change_locations, last_from_middle)
     // have a valid size
     assert(test_mapLBA.size() > 5);
     assert(test_mapLBA.size() == test_locations.size());
+
     // Check to make sure that indices within the vector that should have not
     // been used are not used.
     for(size_t i = 5; i < test_locations.size(); ++i) {
@@ -709,7 +728,7 @@ TEST(change_locations, contiguous_set_large)
 
         // the LBAs that were of the values 250-275 were inserted in front
         // so for the first 25 elements if the location is i then the LBA should
-        // 250 + i
+        // be 250 + i
         location = i;
         locations_LBA = 250+i;
 
@@ -720,7 +739,10 @@ TEST(change_locations, contiguous_set_large)
 
     for (int i = 26; i < 250; ++i) {
         // Since LBAs 250 - 275 were inserted in front the locations and
-        // corresponding LBAS were shifted 26 positions "back".
+        // corresponding LBAS for the previously first 0-249 locations were
+        // shifted 26 positions "back", so if the location is i then the LBA at
+        // that location is i - 26, since preiously that LBA was at location
+        // i -26.
         location = i;
         locations_LBA = i - 26;
 
@@ -739,6 +761,8 @@ TEST(change_locations, contiguous_set_large)
         assert(test_mapLBA[locations_LBA].location == location);
     }
 
+    // Make sure that the used data members remain true for the first 500
+    // locations and LBAs
     for(int i = 0; i < 500; ++i) {
         assert(test_mapLBA[i].used == true);
         assert(test_locations[i].used == true);
@@ -748,6 +772,7 @@ TEST(change_locations, contiguous_set_large)
     // have a valid size
     assert(test_mapLBA.size() > 500);
     assert(test_mapLBA.size() == test_locations.size());
+
     // Check to make sure that indices within the vector that should have not
     // been used are not used.
     for(size_t i = 500; i < test_locations.size(); ++i) {
@@ -758,7 +783,7 @@ TEST(change_locations, contiguous_set_large)
 }
 
 // Make sure that change_locations works when a set of elements that were
-// previously a non contiguous set of elements is changed
+// previously a non contiguous set of elements is inserted at the front
 TEST(change_locations, noncontiguous_set_large)
 {
 
@@ -781,7 +806,7 @@ TEST(change_locations, noncontiguous_set_large)
      vector<TraceSet::LBA_location>& test_locations = test.get_locations();
 
 
-    // Create a vector size_ts to insert
+    // Create a vector of size_ts to insert
     vector<size_t> to_insert;
 
     // Add size_ts to the vector to insert
@@ -817,14 +842,19 @@ TEST(change_locations, noncontiguous_set_large)
         // Checks to see if the element is one that was inserted at the front,
         // if it is then it increments the positions_to_shift variable.
         //
-        // This variable is is incremented because all LBAs after this will need
-        // to be shifted back a position since that element was put at the front
+        // This variable is is incremented because this means the struct held
+        // at this position was inserted at the front of the list.
         if (LBA % 20 == 0) {
 
             ++positions_to_shift;
 
         } else {
 
+            // We see that all locations were shifted back 25
+            // positions but that every time we see an element which was
+            // inserted at the front, the amount of postions back that elements
+            // after that location need be shifted is one less since the element
+            // at that location was already accounted for
             location = LBA + 25 - positions_to_shift;
             locations_LBA = LBA;
 
@@ -834,6 +864,8 @@ TEST(change_locations, noncontiguous_set_large)
         }
     }
 
+    // Make sure that the used data members remain true for the first 500
+    // locations and LBAs
     for(int i = 0; i < 500; ++i) {
         assert(test_mapLBA[i].used == true);
         assert(test_locations[i].used == true);
@@ -843,14 +875,16 @@ TEST(change_locations, noncontiguous_set_large)
     // have a valid size
     assert(test_mapLBA.size() > 500);
     assert(test_mapLBA.size() == test_locations.size());
+
     // Check to make sure that indices within the vector that should have not
     // been used are not used.
     for(size_t i = 500; i < test_locations.size(); ++i) {
 
         assert(test_locations[i].used == false);
         assert(test_mapLBA[i].used == false);
-        
+
     }
+
 }
 
 //--------------------------------------------------
