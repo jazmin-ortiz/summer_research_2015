@@ -1,0 +1,128 @@
+#! /bin/zsh
+# Author: Jazmin Ortiz
+# Date: 06/30/15
+#
+# Description: This is a script that was written to take in a .txt which
+# represents a trace (where each line is an LBA that is accessed) and this
+# will return a .txt file where each line contains 3 elements the second is
+# an LBA that is in the top "Number" of frequent LBAs. The third
+# is a LBA  that directly proceeds the frequent LBA and the first is the
+# number of occurences of this pair of LBAs in the user input file.
+
+usage="Usage:
+              -d <Directory> | This flag followed by the argument Directory
+                               allows the user to specify the directory in 
+                               which to run this script. If this flag is not
+                               used then the script will be run in the current
+                               directory. 
+
+
+              -n <Number>    | This flag followed by the argument Number
+                               allows the user to specify that the only the
+                               top Number of LBAs should be considered. If 
+                               this is not specified then the top 1000 will be
+                               be considered.
+
+
+               -f <File>     | This flag followed by the argument File 
+                               specifies the file from which the data that
+                               should be read. 
+
+                  
+              NOTE             Please note that if the flag -f followed by 
+                               the file name is not included that the script
+                               will not run."
+
+
+# Please note that if the -d flag followed by a directory is not specified then
+# the directory checked will be the current directory and if the number is not
+# specified that only the 1000 most frequent LBAs will be considered.
+DIRECTORY=.
+NUMBER=1000
+FILE="unassigned"
+while true; do
+  case $1 in 
+    -d ) shift
+         DIRECTORY=$1
+         shift
+         ;;
+
+    -n) shift
+	NUMBER=$1
+	shift
+	;;
+    
+    -f ) shift
+	 FILE=$1
+         break
+         ;;
+
+     * ) echo -e $usage
+         exit
+  esac
+done
+
+
+################################### FUNTIONS ###################################
+
+# This function creates a .txt file called frequent_LBAs.txt that contains the
+# top "Number" of frequent LBAs
+function most_frequent_LBAs
+{
+    
+    sort ${FILE} | uniq -c | sort | tail -n ${NUMBER} \
+	| awk '{print $2}' '-' | sort > frequent_LBAs.txt
+
+}
+
+# This function creates a .txt file called LBA_pairs.txt where each line
+# contains an LBA and the LBA proceeding it, it then removes the last line.
+# It removes the last line for the case where there is an odd number of
+# LBAs, in this case the last line would contain a single element and should
+# not be included.
+function LBA_list
+{
+sed 'N; s/\n/ /' ${FILE} | sed '$d' | sort >  LBA_pairs.txt
+}
+
+############### CODE TO GENERATE RETURNED FILE ##############################
+
+# Checks to make sure that the user specified directory is a valid
+# directory, if it is not, exits the script otherwise cd to the specified
+# valid directory.
+if [ ! -d $DIRECTORY ] 
+  then
+  echo "The directory entered is not a valid directory."
+  exit
+else 
+  cd $DIRECTORY
+fi
+
+# Checks to make sure that the user specified file is a valid
+# file, if it is not, exits the script otherwise cd to the specified
+# valid directory.
+if [ ! -f $FILE ] 
+  then
+  echo "The file entered is not a file."
+  exit
+fi
+
+# Creates a file called frequent_LBAs.txt that contains the top NUMBER of
+# frequent LBAs from user input .txt file
+$(most_frequent_LBAs)
+
+# Creates a .txt file called LBA_pairs.txt where each line contains
+# an LBA and the LBA proceeding it.
+$(LBA_list)
+
+# Returns the a .txt file called frequent_LBA_pairs.txt where each line
+# contains 3 elements the second is an LBA that is in the top "Number" of
+# frequent LBAs. The third is a LBA  that directly proceeds the
+# frequent LBA and the first is the number of occurences of this pair of LBAs
+# in the user input file.
+join frequent_LBAs.txt LBA_pairs.txt | sort | uniq -c \
+    | sort -r > frequent_LBA_pairs.txt
+
+# Removes the temporary files that are no longer neccesary.
+rm frequent_LBAs.txt
+rm LBA_pairs.txt
