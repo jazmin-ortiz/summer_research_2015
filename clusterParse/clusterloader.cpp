@@ -47,6 +47,7 @@ int main()
 
     // Reads in the user input file.
     cluster.readIn(clutoFile);
+    cluster.printTree(std::cout);
   }
 
   return 0;
