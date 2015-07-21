@@ -53,6 +53,16 @@ public:
    */
   void insert(std::string LBA_to_add);
 
+  /**
+   * function: most_frequent(size_t top_most_frequent)
+   *
+   * This function returns a vector of size_ts which represent the most frequent
+   * LBAS in the sequence_ data member from most to least frequent. The length
+   * of the vector returned is specified by the input value top_most_frequent.
+   *
+   */
+  std::vector<std::size_t> most_frequent(size_t top_most_frequent)
+
 private:
 
   /**

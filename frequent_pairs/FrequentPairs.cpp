@@ -41,20 +41,21 @@ vector<size_t>& FrequentPairs::get_Sequence()
 }
 
 /**
- * function: readIn(ifstream& inputstream)
+ * function: readInSequence(ifstream& inputstream)
  *
- * Reads in from standard in and changes the Sequence_ data member
- * apropriately using the insert function.
+ * Reads in LBAs from standard in and inserts LBAs into the
+ * Sequences_ data member.
  */
-void FrequentPairs::readIn(ifstream& inputstream)
+void FrequentPairs::readInSequence(ifstream& inputstream)
 {
 
   // While loop to read in a text file from stdin.
   //
-  // The most recently read character and variable to hold the LBAs that are
-  //read in as string from stdin
+  // The most recently read character and variables to hold and insert the LBAs
+  // that are read in as a string from stdin
   char c;
   string current_LBA = "";
+  size_t LBA_to_add;
   while (inputstream.get(c)) {
 
     // Makes sure that stream closes if eof char is seen
@@ -63,12 +64,18 @@ void FrequentPairs::readIn(ifstream& inputstream)
       return;
 
     }
+    
     // Checks if a newline has been encountered which means that the
     // the current LBA has been completed and if so inserts it into the
     // Sequence_ vector.
     else if ( c == '\n' ) {
 
-      insert(current_LBA);
+      // Creates a size_t that represents the current_LBA and pushes it onto
+      // the Sequence_ data member
+      LBA_to_add = stoi(current_LBA);
+      Sequence_.push_back(LBA_to_add);insert(current_LBA);
+
+      // Resets the current_LBA, since the LBA has already been added
       current_LBA = "";
 
     }
@@ -87,16 +94,57 @@ void FrequentPairs::readIn(ifstream& inputstream)
 }
 
 /**
- * function: insert(std::string LBA_to_add)insert
+ * function: ReadInFrequentLBAs(std::ifstream& inputstream)
  *
- * Takes in a string and adds it to the end of the Sequence_data member.
- *
+ * Reads in a .txt where each line contains a single element which represents a
+ * frequent LBA, and inserts that value into the FrequentLBAs_ data member which
+ * is a hashtable.
  */
-void FrequentPairs::insert(string LBA_to_add)
- {
-   // size_t version of the LBA
-   size_t added_LBA = stoi(LBA_to_add);
+void FrequentPairs::ReadInFrequentLBAs(ifstream& inputstream)
+{
 
-   Sequence_.push_back(added_LBA);
- }
+  // While loop to read in a text file from stdin.
+  //
+  // The most recently read character and variables to hold and insert the LBAs
+  // that are read in as a string from stdin
+  char c;
+  string current_LBA = "";
+  size_t LBA_to_add;;
+  while (inputstream.get(c)) {
 
+    // Makes sure that stream closes if eof char is seen
+    if (inputstream.eof()){
+
+      return;
+
+    }
+
+    // Checks if a newline has been encountered which means that the
+    // the current LBA has been completed and if so inserts it into the
+    // FrequentLBAs_ hashtable where both the key and the value are the
+    // current_LBA.
+    else if ( c == '\n' ) {
+
+      LBA_to_add = stoi(current_LBA);
+      FrequentLBAs_.emplace(LBA_to_add, LBA_to_add);
+
+       // Resets the current_LBA, since the LBA has already been added
+      current_LBA = "";
+
+    }
+
+    // If a newline char has not been seen continues to push chars onto
+    // current_LBA
+    else {
+
+      current_LBA.push_back(c);
+
+    }
+
+  }
+
+  inputstream.close();
+
+
+}
+  
