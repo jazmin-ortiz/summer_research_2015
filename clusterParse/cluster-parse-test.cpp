@@ -10,6 +10,7 @@
 #include "gtest/gtest.h"
 
 #include <memory>
+#include <fstream>
 
 using namespace std;
 
@@ -48,11 +49,7 @@ TEST(getChild, smallTree)
 {
     ClusterParse test; 
     test.insert(0, 2);
-    test.printChildren(0);
-    test.printChildren(2);
     test.insert(1, 2); 
-    test.printChildren(1);
-    test.printChildren(2);
     test.insert(2, 5);
     test.insert(3, 4);
     test.insert(4, 5); 
@@ -99,6 +96,42 @@ TEST(child_existance, smallTree)
 
 }
 
+TEST(parent, fullTree){
+    ClusterParse test;
+    string filename = "test1";
+    ifstream testFile(filename);
+    test.readIn(testFile); 
+    assert(test.getParent(15) == 18); 
+    assert(test.getParent(17) == 18);
+    assert(test.getParent(13) == 15); 
+    assert(test.getParent(1) == 13);
+    assert(test.getParent(5) == 13); 
+    assert(test.getParent(8) == 11);
+    assert(test.getParent(9) == 11); 
+    assert(test.getParent(0) == 10);
+    assert(test.getParent(7) == 12);
+}
+
+TEST(children, fullTree){
+    ClusterParse test;
+    string filename = "test1";
+    ifstream testFile(filename);
+    test.readIn(testFile); 
+
+    assert(test.isChild(15, 18));
+    assert(test.isChild(7, 12)); 
+    assert(test.isChild(3, 12)); 
+    assert(test.isChild(0, 10));
+    assert(test.isChild(17, 18));
+    assert(test.isChild(12, 17)); 
+    assert(test.isChild(3, 12)); 
+    assert(test.isChild(2, 16));
+    assert(test.isChild(8, 11));
+    assert(test.isChild(4, 10)); 
+    assert(test.isChild(1, 13)); 
+    assert(test.isChild(5, 13));
+
+}
 
 
 
