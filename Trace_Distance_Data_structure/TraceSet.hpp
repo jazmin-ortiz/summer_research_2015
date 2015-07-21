@@ -29,7 +29,7 @@
 * contains our approxmition of a given LBAs location.
 *
 * The quality of the algorithms are tested against one another using the metric
-* of "seek total distance" which is calculated by the total_seek_distance()
+* of "total seek distance" which is calculated by the total_seek_distance()
 * function which finds the "total distance" which is said to be the sum of the
 * absolute value of differences of locations associated with consecutive LBAs in
 * the Sequence_ vector.
@@ -75,15 +75,15 @@ public:
    *
    *  A struct to keep track of the logical blocks used in the trace
    *  and the locations that those blocks are mapped to which we refer
-   *  to as PBA.
+   *  to as location.
    */
   struct blockLBA{
 
     size_t first;             // Index to the first time that LBA
-                              // occurs in the traceSequence_ vector
+                              // occurs in the Sequence_ vector
 
     size_t last;              // Index of the last time the LBA occurs in
-                              // the traceSequence_ vector
+                              // the Sequence_ vector
 
     size_t location;          // Please note that this is not the actual
                               // physical block address since this is not known
@@ -131,7 +131,7 @@ public:
 
 
   /// This function takes in a size_t which is an LBA and returns
-  /// a vector of ints which represent the indices of all
+  /// a vector of size_ts which represent the indices of all
   /// occurences of the given LBA in the TraceSet private data member
   /// Sequence_.
   std::vector<size_t> get_indices(size_t LBA_to_find);
@@ -175,7 +175,7 @@ public:
 
 private:
 
-  // Sequence_ is an array of TraceSet structs. Together it contains
+  // Sequence_ is an vector of TraceSet structs. Together it contains
   // the entirety of the trace, and the index of the next instance of that
   // LBA in the trace.
   std::vector<Line> Sequence_;

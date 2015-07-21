@@ -139,7 +139,7 @@ void TraceSet::insert(string LBA_to_add)
   // LBA in the Sequence_ vector.
   if (LBAs_blockLBA.used) {
 
-     // LBAs_blockLBA data members have not been updated, the data member
+     // LBAs_blockLBA data members have not been updated yet, the data member
      // called last now is the index of the second to last
      size_t second_to_last = LBAs_blockLBA.last;
 
@@ -182,12 +182,12 @@ void TraceSet::readIn(ifstream& inputstream)
   // While loop to read in a text file from stdin.
   //
   // The most recently read character and variable to hold the LBAs that are
-  //read in as string from stdin in the
+  //read in as string from stdin
   char c;
   string current_LBA = "";
   while (inputstream.get(c)) {
 
-    // Makes sure that
+    // Makes sure that streamn closes if eof char is seen
     if (inputstream.eof()){
 
       return;
