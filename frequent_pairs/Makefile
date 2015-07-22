@@ -11,7 +11,7 @@ GTEST_OBJS  = gtest-all.o
 # disable its use.
 CPPFLAGS += -I. -DGTEST_HAS_PTHREAD=0
 
-TARGETS 	    =	frequent-pairs-test trace-set
+TARGETS 	    =	frequent-pairs-test frequentpairs-set
 FREQUENTPAIRSTEST_OBJS     =	FrequentPairs.o frequent-pairs-test.o $(GTEST_OBJS)
 FREQUENTPAIRS_OBJS	=	frequentpairsloader.o FrequentPairs.o
 
@@ -26,7 +26,7 @@ frequent-pairs-test:	$(FREQUENTPAIRSTEST_OBJS)
 test: frequent-pairs-test
 	./frequent-pairs-test
 
-frequentpairs-set: $(FERQUENTPAIRS_OBJS)
+frequentpairs-set: $(FREQUENTPAIRS_OBJS)
 	$(CXX) $(LDFLAGS) $(LIBS) $(CXXFLAGS) -o $@ $(FREQUENTPAIRS_OBJS)
 
 # Calling make frequentpairs will run the main in frequentpairsloader.cpp
@@ -34,7 +34,7 @@ frequentpairs: frequentpairs-set
 	./frequentpairs-set
 
 clean:
-	rm -f $(TARGETS) $(TRACETEST_OBJS) $(TRACE_OBJS)
+	rm -f $(TARGETS) $(FREQUENTPAIRSTEST_OBJS) $(FREQUENT_OBJS)
 
 frequent-pairs-test.o: frequent-pairs-test.cpp 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c frequent-pairs-test.cpp
