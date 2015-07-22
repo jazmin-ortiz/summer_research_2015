@@ -13,6 +13,7 @@
 #define FREQUENTPAIRS_HPP_INCLUDED 1
 
 #include <vector>
+#include <unordered_map>
 
 
 class FrequentPairs{
@@ -58,7 +59,19 @@ public:
    * unique, if an LBA occurs more than once in the .txt file this function is
    * not guaranteed to insert LBAs properly.
    */
-  void readInFrequentLBAs(std::ifstream& inputstream)
+  void readInFrequentLBAs(std::ifstream& inputstream);
+
+  /**
+   * function: fillInFrequentMatrix()
+   *
+   * This is a function that creates a vector of vectors of size_ts that is an
+   * adjacency matrix from all the LBAs in FrequentLBAs_. This is an n by n
+   * matrix where each index corresponds to a frequent LBA that was mapped to
+   * that index in the FrequentLBAs_ vector, the value at position i,j is the
+   * number of times that the LBAS mapped to i and j are consectuive in the
+   * Sequence_ data member.
+   */
+  std::vector<std::vector<std::size_t>> fillInFrequentMatrix();
 
 private:
 
@@ -81,7 +94,7 @@ private:
    * Seuqence_ data member where each postion contains a size_t which is an LBA
    * and the index of that LBA is the size_t that the LBA is mapped to.
    */
-  std::vector<size_t> FrequentLBAS_;
+  std::vector<size_t> FrequentLBAs_;
 };
 
 #endif // FREQUENTPAIRS_HPP_INCLUDED

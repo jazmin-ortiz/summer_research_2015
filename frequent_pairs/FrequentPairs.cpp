@@ -10,6 +10,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <unordered_map>
 
 #include "FrequentPairs.hpp"
 
@@ -167,6 +168,121 @@ void FrequentPairs::ReadInFrequentLBAs(ifstream& inputstream)
 
   inputstream.close();
 
+
+}
+
+/**
+ * function: fillInFrequentMatrix()
+ *
+ * This function creates an adjacency matrix from the LBAs in FrequentLBAs_.
+ * This is an n by n matrix where each row/column corresponds to a frequent LBA
+ * that was mapped to that row/column in the FrequentLBAs_ vector, the value at
+ * position i,j is the number of times that the LBAS mapped to i and j are
+ * consecutive in the Sequences_ data member.
+ */
+std::vector<std::vector<std::size_t>> fillInFrequentMatrix()
+{
+
+  // The matrix will be an n by n matrix where n is the number of LBAs in
+  // FrequentLBAs_, so here we create a varaiable which is the number of LBAs.
+  size_t num_LBAs = FrequentLBAs_.size();
+
+  // Initialize a vector of vectors of size_ts of the correct size
+  vector<vector<size_t>> adjacency_matrix(num_LBAs, vector<size_t>(num_LBAS));
+
+  // Loop through and set all size_ts to 0 in adjacency matrix to 0 so that we
+  // can later increment these values to reflect the number of times frequent
+  // LBAs are adjacent accurately.
+  for (size_t j = 0; j < num_LBAs; ++j) {
+    for (size_t i = 0; i < num_LBAS; ++i) {
+
+      adjacency_matrix[j][i] = 0;
+
+    }
+  }
+
+  // Now that all values in the adjacency matrix have been set to 0, the
+  // adjacency matrix will now be filled by looping through the Sequences_
+  // matrix and for each value checking if it and the following LBA are frequent
+  // by checking if they are in the hash table FrequentLBAsTable_.
+  //
+  // If they are both frequent then thier values, i and j in the in the
+  // FrequentLBAsTable_ will be thier indices in the FrequentLBAs_ vector and
+  // therefore also be thier row/column in adjacency_matrix, so we will use
+  // thier values to properly increment the elements at postions i,j and j,i in
+  // the adjacency matrix by 1.
+  //
+  // If they are not both frequent then nothing will happen and the next LBA
+  // in Sequences_ will be considered.
+
+  // Temp variables for the following loop
+  unordered_map<size_t, size_t>::iterator LBA_it;
+  unordered_map<size_t, size_t>::iterator next_LBA_it;
+  size_t LBA;
+  size_t next_LBA;
+  size_t LBAs_index;
+  size_t next_LBAs_index;
+  size_t new_value;
+
+  // Since we are comparing an LBA and the following LBA if we loop all the way
+  // until the last element and try to check the last element against the
+  // following LBA that will cause undefined behavior.
+  size_t LBAs_ = Sequence_.size() - 1;
+
+  // We will be checking if iterators will be pointing at
+  // FrequentLBAsTable_.end() and FrequentLBASTable_ will not be
+  // altered in this function so an iterator pointing at end() will be
+  // initialized so that FrequentLBAsTable_.end() will be called only once.
+  unordered_map<size_t, size_t>::iterator end = FrequentLBAsTable_.end();
+
+  for (size_t i = 0; i < LBAs_; ++i) {
+
+    // Set LBA and next_LBA to thier values in Sequences_
+    LBA = Sequence_[i];
+    next_LBA = Sequence_[i+1];
+
+    // Set iterators LBA_it and next_LBA_it to be equal to iterators that
+    // are returned when find is called on thier corresponding LBAs, LBA and
+    // next_LBA
+    LBA_it = FrequentLBAsTable_.find(LBA);
+    next_LBA_it = FrequentLBAsTable_.find(next_LBA);
+
+    // We know that the iterators will be be pointing at
+    // FrequentLBAsTable_.end() if the value was not in the table.
+    // So if both LBA_it and next_LBA_it are not pointing at the end then they
+    // are both frequent and thier corresponding elements in adjacency_matrix
+    // should be incremented by 1.
+    //
+    // Recall that we initialized an iterator called end that is equal to
+    // FrequentLBAsTable.end() that will be used in the if statement
+    if (LBA_it != end && next_LBA_it != end) {
+
+      // Assign LBAs_index and next_LBAs_index to the values in the hash table
+      // gotten by derefencing the values of LBAs_it and next_LBAs_it, since
+      // their values in the hashtable will be thier index in FrequentLBAs_
+      // and thier row/column in adjacency_matrix
+      LBAs_value = LBA_it->second;
+      next_LBAs_value = next_LBA_it->second;
+
+      // These values are the indices of these LBAS in adjacency_matrix, so
+      // the values held at  positions (LBAs_value, next_LBAs_value) and
+      // (next_LBAs_value, LBAs_value) will both be incremented by 1 since these
+      // appear consecutively in Sequences_
+      new_value = adjacency_matrix[LBAs_value][next_LBAs_value] + 1;
+
+      adjacency_matrix[LBAs_value][next_LBAs_value] = new_value;
+      adjacency_matrix[next_LBAs_value][LBAs_value] = new_value;
+
+    } else {
+
+      // Do nothing, this is the case where one of the LBAs being considered is
+      // not frequent
+
+    }
+
+  }
+
+  return adjacency_matrix;
 
 }
   
