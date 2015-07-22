@@ -38,6 +38,20 @@ public:
   std::vector<size_t>& get_Sequence();
 
   /**
+   * function:  get_FrequentLBAsTable()
+   *
+   * Returns a reference to the FrequentLBAsTable_ private data member
+   */
+  std::unordered_map<size_t, size_t>& get_FrequentLBAsTable();
+
+  /**
+   * function:  get_FrequentLBAs()
+   *
+   * Returns a reference to the FrequentLBAs_ private data member
+   */
+  std::vector<size_t>& get_FrequentLBAs();
+
+  /**
    * function: readInSequence(std::ifstream& inputstream
    *
    * Reads in a text file where each line in the text file contains a LBA

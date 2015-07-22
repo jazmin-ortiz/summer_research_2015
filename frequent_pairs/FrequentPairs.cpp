@@ -42,6 +42,32 @@ vector<size_t>& FrequentPairs::get_Sequence()
 }
 
 /**
+ * function: get_FrequentLBAsTable()
+ *
+ * Returns a reference to the FrequentLBAsTable_ private data member
+ */
+unordered_map<size_t, size_t>& FrequentPairs::get_FrequentLBAsTable()
+{
+  unordered_map<size_t, size_t>& table = FrequentLBAsTable_;
+
+  return table;
+
+}
+
+/**
+ * function: get_FrequentLBAs()
+ *
+ * Returns a reference to the FrequentLBAs_ private data member
+ */
+vector<size_t>& FrequentPairs::get_FrequentLBAs()
+{
+  vector<size_t>& frequentLBAs = FrequentLBAs_;
+
+  return frequentLBAs;
+
+}
+
+/**
  * function: readInSequence(ifstream& inputstream)
  *
  * Reads in LBAs from standard in and inserts LBAs into the
