@@ -29,7 +29,7 @@ FrequentPairs::~FrequentPairs()
 }
 
 /**
- * function: get_sequence()
+ * function: get_Sequence()
  *
  * Returns a reference to the Sequence_ private data member
  */
