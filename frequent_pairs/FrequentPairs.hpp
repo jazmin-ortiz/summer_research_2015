@@ -67,8 +67,8 @@ public:
    * This is a function that creates a vector of vectors of size_ts that is an
    * adjacency matrix from all the LBAs in FrequentLBAs_. This is an n by n
    * matrix where each row/column i, corresponds to a frequent LBA that was
-   * mapped to the index i in the FrequentLBAs_ vector, the value at position
-   * (i,j) is the number of times that the LBAS mapped to i and j 
+   * mapped to the index i in the FrequentLBAs_ vector, the value at index
+   * (i,j) is the number of times that the LBAS mapped to i and j
    * are consecutive in the Sequence_ data member.
    */
   std::vector<std::vector<std::size_t>> fillInFrequentMatrix();
