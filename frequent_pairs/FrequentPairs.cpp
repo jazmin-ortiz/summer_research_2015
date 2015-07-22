@@ -64,7 +64,7 @@ void FrequentPairs::readInSequence(ifstream& inputstream)
       return;
 
     }
-    
+
     // Checks if a newline has been encountered which means that the
     // the current LBA has been completed and if so inserts it into the
     // Sequence_ vector.
@@ -96,9 +96,12 @@ void FrequentPairs::readInSequence(ifstream& inputstream)
 /**
  * function: ReadInFrequentLBAs(std::ifstream& inputstream)
  *
- * Reads in a .txt where each line contains a single element which represents a
- * frequent LBA, and inserts that value into the FrequentLBAs_ data member which
- * is a hashtable.
+ * Reads in a .txt where each line contains a single unique element
+ * which represents a frequent LBA, and inserts that value into the
+ * FrequentLBAsTable_ data member and the FrequentLBAs_ data member, where
+ * FrequentLBAs_ is a vector of the frequent LBAs and FrequentLBAsTable_ is a
+ * hashtable where the keys are frequent LBAs and the values are the index of
+ * that LBA in FrequentLBAs_.
  */
 void FrequentPairs::ReadInFrequentLBAs(ifstream& inputstream)
 {
@@ -109,7 +112,8 @@ void FrequentPairs::ReadInFrequentLBAs(ifstream& inputstream)
   // that are read in as a string from stdin
   char c;
   string current_LBA = "";
-  size_t LBA_to_add;;
+  size_t LBA_to_add;
+  size_t LBAs_index = 0;
   while (inputstream.get(c)) {
 
     // Makes sure that stream closes if eof char is seen
@@ -120,16 +124,34 @@ void FrequentPairs::ReadInFrequentLBAs(ifstream& inputstream)
     }
 
     // Checks if a newline has been encountered which means that the
-    // the current LBA has been completed and if so inserts it into the
-    // FrequentLBAs_ hashtable where both the key and the value are the
-    // current_LBA.
+    // the current LBA has been completed and if so properly inserts it into
+    // FrequentLBAs_ and FrequentLBAsTable_. Please note that here there is an
+    // assumption that every LBA that is read in is unique, if this is not the
+    // there will be more than one element in the FrequentLBAs_ vector that will
+    // contain the same LBA and the FrequentLBAsTable will only have the index
+    // of the first element.
     else if ( c == '\n' ) {
 
-      LBA_to_add = stoi(current_LBA);
-      FrequentLBAs_.emplace(LBA_to_add, LBA_to_add);
+      LBA_to_add = stoi(crrent_LBA);
 
-       // Resets the current_LBA, since the LBA has already been added
+      // push_back LBA_to_add onto the FrequentLBAs_ data member. Before pushing
+      // back LBA_to_add the length of FrequentLBAs_ is equal to LBAs_index
+      // meaning that LBA_to_add will be at index LBAs_index since when it is
+      // pushed back.
+      FrequentLBAs_.push_back(LBA_to_add);
+
+      // Insert LBA_to_add and LBAs_index as a key value pair into the hash
+      // table FrequentLBAsTable_. Please note that every LBA that is read in is
+      // unique so there will never be the case where there are two element
+      FrequentLBAsTable_.emplace(LBA_to_add, LBAs_index);
+
+
+
+      // Resets the current_LBA, since the LBA has already been added
       current_LBA = "";
+
+      // Update LBAS_index since the LBA has been pushed back
+      ++LBAs_index;
 
     }
 

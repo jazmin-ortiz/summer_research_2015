@@ -37,31 +37,28 @@ public:
   std::vector<size_t>& get_Sequence();
 
   /**
-   * function: readIn(std::ifstream& inputstream
+   * function: readInSequence(std::ifstream& inputstream
    *
    * Reads in a text file where each line in the text file contains a LBA
    * and adds each LBA in the text file to the FrequentPairs data members
    * apropriately.
    */
-  void readIn(std::ifstream& inputstream);
+  void readInSequence(std::ifstream& inputstream);
 
   /**
-   * function: insert(std::string LBA_to_add)
+   * function: ReadInFrequentLBAs(ifstream& inputstream)
    *
-   * Adds a string which defines a LBA address and and adds it to the end
-   * of the traceSequence vector and updates data members apropriately.
+   * This function reads in a .txt file which contains frequent LBAS and inserts
+   * the LBAs into the FrequentLBAsTable_ data member and the FrequentLBAs_ data
+   * member. FrequentLBAs_ is a vector of the frequent LBAs and
+   * FrequentLBAsTable_ is a hashtable where the keys are frequent LBAs and the
+   * values are the index of that LBA in FrequentLBAs_.
+   *
+   * NOTE: There is an implicit assumption that every LBA that is read in is
+   * unique, if an LBA occurs more than once in the .txt file this function is
+   * not guaranteed to insert LBAs properly.
    */
-  void insert(std::string LBA_to_add);
-
-  /**
-   * function: most_frequent(size_t top_most_frequent)
-   *
-   * This function returns a vector of size_ts which represent the most frequent
-   * LBAS in the sequence_ data member from most to least frequent. The length
-   * of the vector returned is specified by the input value top_most_frequent.
-   *
-   */
-  std::vector<std::size_t> most_frequent(size_t top_most_frequent)
+  void readInFrequentLBAs(std::ifstream& inputstream)
 
 private:
 
@@ -70,6 +67,21 @@ private:
    * LBAs in the .txt that is read in.
    */
   std::vector<size_t> Sequence_;
+
+  /**
+   * FrequentLBAsTable_ is a hashtable of size_ts which are frequent LBAs in
+   * Sequence_ and where the key is a frequent LBA and the value is the LBAs
+   * index in the FrequentLBAs_ vector. This data member
+   * allows for quick lookup of the frequent LBAs in Sequence_.
+   */
+  std::unordered_map<size_t, size_t> FrequentLBAsTable_;
+
+  /**
+   * FrequentLBAs_ is a vector of size_ts that represent frequent LBAs in the
+   * Seuqence_ data member where each postion contains a size_t which is an LBA
+   * and the index of that LBA is the size_t that the LBA is mapped to.
+   */
+  std::vector<size_t> FrequentLBAS_;
 };
 
 #endif // FREQUENTPAIRS_HPP_INCLUDED
