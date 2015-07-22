@@ -1,4 +1,4 @@
-# Makefile for TraceSet Tester
+# Makefile for TraceSet class and testing framework for the TraceSet class
 
 CXXFLAGS    =	-g -stdlib=libc++ -std=c++11 -Wall -Wextra -pedantic 
 CXX	    =	clang++
