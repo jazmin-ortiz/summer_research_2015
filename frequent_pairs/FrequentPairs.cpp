@@ -74,7 +74,7 @@ void FrequentPairs::readInSequence(ifstream& inputstream)
       // Creates a size_t that represents the current_LBA and pushes it onto
       // the Sequence_ data member
       LBA_to_add = stoi(current_LBA);
-      Sequence_.push_back(LBA_to_add);insert(current_LBA);
+      Sequence_.push_back(LBA_to_add);
 
       // Resets the current_LBA, since the LBA has already been added
       current_LBA = "";
@@ -104,7 +104,7 @@ void FrequentPairs::readInSequence(ifstream& inputstream)
  * hashtable where the keys are frequent LBAs and the values are the index of
  * that LBA in FrequentLBAs_.
  */
-void FrequentPairs::ReadInFrequentLBAs(ifstream& inputstream)
+void FrequentPairs::readInFrequentLBAs(ifstream& inputstream)
 {
 
   // While loop to read in a text file from stdin.
@@ -133,7 +133,7 @@ void FrequentPairs::ReadInFrequentLBAs(ifstream& inputstream)
     // of the first element.
     else if ( c == '\n' ) {
 
-      LBA_to_add = stoi(crrent_LBA);
+      LBA_to_add = stoi(current_LBA);
 
       // push_back LBA_to_add onto the FrequentLBAs_ data member. Before pushing
       // back LBA_to_add the length of FrequentLBAs_ is equal to LBAs_index
@@ -180,7 +180,7 @@ void FrequentPairs::ReadInFrequentLBAs(ifstream& inputstream)
  * index (i,j) is the number of times that the LBAS mapped to i and j are
  * consecutive in the Sequences_ data member.
  */
-std::vector<std::vector<std::size_t>> fillInFrequentMatrix()
+std::vector<std::vector<std::size_t>> FrequentPairs::fillInFrequentMatrix()
 {
 
   // The matrix will be an n by n matrix where n is the number of LBAs in
@@ -188,13 +188,13 @@ std::vector<std::vector<std::size_t>> fillInFrequentMatrix()
   size_t num_LBAs = FrequentLBAs_.size();
 
   // Initialize a vector of vectors of size_ts of the correct size
-  vector<vector<size_t>> adjacency_matrix(num_LBAs, vector<size_t>(num_LBAS));
+  vector<vector<size_t>> adjacency_matrix(num_LBAs, vector<size_t>(num_LBAs));
 
   // Loop through and set all size_ts to 0 in adjacency matrix to 0 so that we
   // can later increment these values to reflect the number of times frequent
   // LBAs are adjacent accurately.
   for (size_t j = 0; j < num_LBAs; ++j) {
-    for (size_t i = 0; i < num_LBAS; ++i) {
+    for (size_t i = 0; i < num_LBAs; ++i) {
 
       adjacency_matrix[j][i] = 0;
 
@@ -258,18 +258,18 @@ std::vector<std::vector<std::size_t>> fillInFrequentMatrix()
       // gotten by derefrencing the values of LBAs_it and next_LBAs_it, since
       // their values in the hashtable will be thier index in FrequentLBAs_
       // and thier row/column in adjacency_matrix
-      LBAs_value = LBA_it->second;
-      next_LBAs_value = next_LBA_it->second;
+      LBAs_index = LBA_it->second;
+      next_LBAs_index = next_LBA_it->second;
 
       // These values are the indices of these LBAS in adjacency_matrix, so
       // the values held at  positions (LBAs_value, next_LBAs_value) and
       // (next_LBAs_value, LBAs_value) will both be incremented by 1 since these
       // appear consecutively in Sequences_. Increment the value held at these
       // indices by 1 since because we have seen them consecutively in Sequence_
-      new_value = adjacency_matrix[LBAs_value][next_LBAs_value] + 1;
+      new_value = adjacency_matrix[LBAs_index][next_LBAs_index] + 1;
 
-      adjacency_matrix[LBAs_value][next_LBAs_value] = new_value;
-      adjacency_matrix[next_LBAs_value][LBAs_value] = new_value;
+      adjacency_matrix[LBAs_index][next_LBAs_index] = new_value;
+      adjacency_matrix[next_LBAs_index][LBAs_index] = new_value;
 
     } else {
 
