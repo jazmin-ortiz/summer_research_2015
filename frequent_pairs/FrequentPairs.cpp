@@ -262,10 +262,9 @@ std::vector<std::vector<std::size_t>> FrequentPairs::fillInFrequentMatrix()
       next_LBAs_index = next_LBA_it->second;
 
       // These values are the indices of these LBAS in adjacency_matrix, so
-      // the values held at  positions (LBAs_value, next_LBAs_value) and
+      // the values held at indices (LBAs_value, next_LBAs_value) and
       // (next_LBAs_value, LBAs_value) will both be incremented by 1 since these
-      // appear consecutively in Sequences_. Increment the value held at these
-      // indices by 1 since because we have seen them consecutively in Sequence_
+      // appear consecutively in Sequences_.
       new_value = adjacency_matrix[LBAs_index][next_LBAs_index] + 1;
 
       adjacency_matrix[LBAs_index][next_LBAs_index] = new_value;
