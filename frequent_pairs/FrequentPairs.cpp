@@ -176,8 +176,8 @@ void FrequentPairs::ReadInFrequentLBAs(ifstream& inputstream)
  *
  * This function creates an adjacency matrix from the LBAs in FrequentLBAs_.
  * This is an n by n matrix where each row/column corresponds to a frequent LBA
- * that was mapped to that row/column in the FrequentLBAs_ vector, the value at
- * position i,j is the number of times that the LBAS mapped to i and j are
+ * that was mapped to that index in the FrequentLBAs_ vector, the value at
+ * index (i,j) is the number of times that the LBAS mapped to i and j are
  * consecutive in the Sequences_ data member.
  */
 std::vector<std::vector<std::size_t>> fillInFrequentMatrix()
@@ -202,15 +202,15 @@ std::vector<std::vector<std::size_t>> fillInFrequentMatrix()
   }
 
   // Now that all values in the adjacency matrix have been set to 0, the
-  // adjacency matrix will now be filled by looping through the Sequences_
+  // adjacency matrix will now be filled by looping through the Sequence_
   // matrix and for each value checking if it and the following LBA are frequent
   // by checking if they are in the hash table FrequentLBAsTable_.
   //
   // If they are both frequent then thier values, i and j in the in the
   // FrequentLBAsTable_ will be thier indices in the FrequentLBAs_ vector and
   // therefore also be thier row/column in adjacency_matrix, so we will use
-  // thier values to properly increment the elements at postions i,j and j,i in
-  // the adjacency matrix by 1.
+  // thier values to properly increment the elements at indices (i,j) and (j,i)
+  // in the adjacency matrix by 1.
   //
   // If they are not both frequent then nothing will happen and the next LBA
   // in Sequences_ will be considered.
@@ -226,14 +226,15 @@ std::vector<std::vector<std::size_t>> fillInFrequentMatrix()
 
   // Since we are comparing an LBA and the following LBA if we loop all the way
   // until the last element and try to check the last element against the
-  // following LBA that will cause undefined behavior.
+  // following LBA that will cause undefined behavior, so we will set our
+  // loop upper bound as the Sequence_ size minus 1.
   size_t LBAs_ = Sequence_.size() - 1;
 
-  // We will be checking if iterators will be pointing at
+  // We will be check if iterators are pointing at
   // FrequentLBAsTable_.end() and FrequentLBASTable_ will not be
   // altered in this function so an iterator pointing at end() will be
   // initialized so that FrequentLBAsTable_.end() will be called only once.
-  unordered_map<size_t, size_t>::iterator end = FrequentLBAsTable_.end();
+  unordered_map<size_t, size_t>::iterator end_it = FrequentLBAsTable_.end();
 
   for (size_t i = 0; i < LBAs_; ++i) {
 
@@ -247,18 +248,14 @@ std::vector<std::vector<std::size_t>> fillInFrequentMatrix()
     LBA_it = FrequentLBAsTable_.find(LBA);
     next_LBA_it = FrequentLBAsTable_.find(next_LBA);
 
-    // We know that the iterators will be be pointing at
-    // FrequentLBAsTable_.end() if the value was not in the table.
-    // So if both LBA_it and next_LBA_it are not pointing at the end then they
-    // are both frequent and thier corresponding elements in adjacency_matrix
-    // should be incremented by 1.
-    //
-    // Recall that we initialized an iterator called end that is equal to
-    // FrequentLBAsTable.end() that will be used in the if statement
-    if (LBA_it != end && next_LBA_it != end) {
+    // The iterators will be be pointing at FrequentLBAsTable_.end() if the
+    // value is not in the table. If both LBA_it and next_LBA_it are not
+    // pointing at the end then they are both frequent and thier corresponding
+    // elements in adjacency_matrix should be incremented by 1.
+    if (LBA_it != end_it && next_LBA_it != end_it) {
 
       // Assign LBAs_index and next_LBAs_index to the values in the hash table
-      // gotten by derefencing the values of LBAs_it and next_LBAs_it, since
+      // gotten by derefrencing the values of LBAs_it and next_LBAs_it, since
       // their values in the hashtable will be thier index in FrequentLBAs_
       // and thier row/column in adjacency_matrix
       LBAs_value = LBA_it->second;
@@ -267,7 +264,8 @@ std::vector<std::vector<std::size_t>> fillInFrequentMatrix()
       // These values are the indices of these LBAS in adjacency_matrix, so
       // the values held at  positions (LBAs_value, next_LBAs_value) and
       // (next_LBAs_value, LBAs_value) will both be incremented by 1 since these
-      // appear consecutively in Sequences_
+      // appear consecutively in Sequences_. Increment the value held at these
+      // indices by 1 since because we have seen them consecutively in Sequence_
       new_value = adjacency_matrix[LBAs_value][next_LBAs_value] + 1;
 
       adjacency_matrix[LBAs_value][next_LBAs_value] = new_value;
