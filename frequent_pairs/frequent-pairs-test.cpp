@@ -17,7 +17,22 @@ using namespace std;
 //           TEST FUNCTIONS
 //--------------------------------------------------
 
-// Empty test that is a place holder currently
+TEST(constructor, default_constructor)
+{
+    FrequentPairs test;
+    vector<size_t>& test_sequence = test.get_Sequence();
+    unordered_map<size_t,size_t>& test_Table = test.get_FrequentLBAsTable();
+    vector<size_t>& test_FreqLBAs = test.get_FrequentLBAs();
+
+    // Make sure that all data members when default constructed contain no
+    // elements.
+    assert(test_sequence.empty());
+    assert(test_FreqLBAs.empty());
+
+    assert(test_Table.size() == 0);
+
+}
+
 TEST(empty, emptyone)
 {
     //do nothing

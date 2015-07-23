@@ -78,11 +78,10 @@ void FrequentPairs::readInSequence(ifstream& inputstream)
 
   // While loop to read in a text file from stdin.
   //
-  // The most recently read character and variables to hold and insert the LBAs
+  // The most recently read character and variable to insert the LBAs
   // that are read in as a string from stdin
   char c;
   string current_LBA = "";
-  size_t LBA_to_add;
   while (inputstream.get(c)) {
 
     // Makes sure that stream closes if eof char is seen
@@ -97,10 +96,8 @@ void FrequentPairs::readInSequence(ifstream& inputstream)
     // Sequence_ vector.
     else if ( c == '\n' ) {
 
-      // Creates a size_t that represents the current_LBA and pushes it onto
-      // the Sequence_ data member
-      LBA_to_add = stoi(current_LBA);
-      Sequence_.push_back(LBA_to_add);
+      // Insert current_LBA using the helper function
+      insert_LBA_into_Sequence(current_LBA);
 
       // Resets the current_LBA, since the LBA has already been added
       current_LBA = "";
@@ -135,12 +132,10 @@ void FrequentPairs::readInFrequentLBAs(ifstream& inputstream)
 
   // While loop to read in a text file from stdin.
   //
-  // The most recently read character and variables to hold and insert the LBAs
+  // The most recently read character and variable insert the LBAs
   // that are read in as a string from stdin
   char c;
   string current_LBA = "";
-  size_t LBA_to_add;
-  size_t LBAs_index = 0;
   while (inputstream.get(c)) {
 
     // Makes sure that stream closes if eof char is seen
@@ -152,33 +147,18 @@ void FrequentPairs::readInFrequentLBAs(ifstream& inputstream)
 
     // Checks if a newline has been encountered which means that the
     // the current LBA has been completed and if so properly inserts it into
-    // FrequentLBAs_ and FrequentLBAsTable_. Please note that here there is an
+    // FrequentLBAs_ and FrequentLBAsTable_. Please note that here, there is an
     // assumption that every LBA that is read in is unique, if this is not the
-    // there will be more than one element in the FrequentLBAs_ vector that will
-    // contain the same LBA and the FrequentLBAsTable will only have the index
-    // of the first element.
+    // case there will be more than one element in the FrequentLBAs_ vector that
+    // will contain the same LBA and the FrequentLBAsTable will only have the
+    // index of the first element, which is inaccurate.
     else if ( c == '\n' ) {
 
-      LBA_to_add = stoi(current_LBA);
-
-      // push_back LBA_to_add onto the FrequentLBAs_ data member. Before pushing
-      // back LBA_to_add the length of FrequentLBAs_ is equal to LBAs_index
-      // meaning that LBA_to_add will be at index LBAs_index since when it is
-      // pushed back.
-      FrequentLBAs_.push_back(LBA_to_add);
-
-      // Insert LBA_to_add and LBAs_index as a key value pair into the hash
-      // table FrequentLBAsTable_. Please note that every LBA that is read in is
-      // unique so there will never be the case where there are two element
-      FrequentLBAsTable_.emplace(LBA_to_add, LBAs_index);
-
-
+      // Use helper function to insert LBA into data members properly
+      insert_Frequent_LBA(current_LBA);
 
       // Resets the current_LBA, since the LBA has already been added
       current_LBA = "";
-
-      // Update LBAS_index since the LBA has been pushed back
-      ++LBAs_index;
 
     }
 
@@ -196,6 +176,57 @@ void FrequentPairs::readInFrequentLBAs(ifstream& inputstream)
 
 
 }
+
+/**
+ * function: insert_LBA_into_Sequence(string LBA)
+ *
+ * Helper function for readInSequence(). Takes in a string s which is a LBA
+ * and inserts it at the end of the the Sequence_ data member
+ */
+void FrequentPairs::insert_LBA_into_Sequence(string LBA)
+{
+
+  // Creates a size_t from the string
+  size_t LBA_to_add = stoi(LBA);
+
+  // push_back size_t onto Sequence_
+  Sequence_.push_back(LBA_to_add);
+
+}
+
+/**
+ * function: insert_LBA_into_Sequence(string LBA)
+ *
+ * Helper function for readInFrequentLBAs(). Takes in a string s which is a
+ * LBA and inserts into the FrequentLBAsTable_ and FrequentLBAs_ data member
+ * and updates them properly.
+ *
+ * NOTE: There is an implicit assumption that every frequent LBA that is read
+ * in is unique, so if the LBA to insert has already occured in
+ * FrequentLBAsTable_ and FrequentLBAs_ then this function will not update the
+ * these data member properly.
+ */
+void FrequentPairs::insert_Frequent_LBA(string LBA)
+{
+  // Converts the LBA which is a string into a size_t
+  size_t LBA_to_add = stoi(LBA);
+
+  // push_back LBA_to_add onto the FrequentLBAs_ data member.
+  FrequentLBAs_.push_back(LBA_to_add);
+
+  // The index of the LBA in FrequentLBAs_ will its value in FrequentLBAsTable_
+  // since the LBA was just pushed back onto FrequentLBAs_ it will be the last
+  // element in the vector meaning that its index is FrequentLBAs_.size()-1.
+  size_t LBA_index = FrequentLBAs_.size() - 1;
+
+  // Insert LBA_to_add and LBA_index as a key value pair into the
+  // FrequentLBAsTable_.
+  FrequentLBAsTable_.emplace(LBA_to_add, LBA_index);
+
+}
+
+
+
 
 /**
  * function: fillInFrequentMatrix()

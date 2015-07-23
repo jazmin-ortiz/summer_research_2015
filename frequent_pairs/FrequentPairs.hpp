@@ -52,7 +52,7 @@ public:
   std::vector<size_t>& get_FrequentLBAs();
 
   /**
-   * function: readInSequence(std::ifstream& inputstream
+   * function: readInSequence(std::ifstream& inputstream)
    *
    * Reads in a text file where each line in the text file contains a LBA
    * and adds each LBA in the text file to the FrequentPairs data members
@@ -86,6 +86,29 @@ public:
    * are consecutive in the Sequence_ data member.
    */
   std::vector<std::vector<std::size_t>> fillInFrequentMatrix();
+
+  /**
+   * function: insert_LBA_into_Sequence(string LBA)
+   *
+   * Helper function for readInSequence(). Takes in a string s which is a LBA
+   * and inserts it at the end of the the Sequence_ data member
+   */
+  void insert_LBA_into_Sequence(std::string LBA);
+
+  /**
+   * function: insert_LBA_into_Sequence(string LBA)
+   *
+   * Helper function for readInFrequentLBAs(). Takes in a string s which is a
+   * LBA and pushes back the LBA onto FrequentLBAs_ and then inserts the LBA
+   * into FrequentLBAsTable_ with the LBA as the key and the LBAs index in
+   * FrequentLBAs_ as its value.
+   *
+   * NOTE: There is an implicit assumption that every frequent LBA that is read
+   * in is unique, so if the LBA to insert has already occured in
+   * FrequentLBAsTable_ and FrequentLBAs_ then this function will not update the
+   * these data member properly.
+   */
+  void insert_Frequent_LBA(std::string LBA);
 
 private:
 
