@@ -29,11 +29,11 @@ int main()
   cin >> file_to_load;
 
   // Creates a fstream object tracefile which holds the contents of the
-  // trace file input by the user.
+  // cluto file input by the user.
   ifstream clutoFile(file_to_load);
 
-  // Returns an error message if the tracefile does not exist otherwise loads
-  // the fstream tracefile into a TraceFile object.
+  // Returns an error message if the cluto does not exist otherwise loads
+  // the fstream clutoFile into a clusterParse object.
   if(!clutoFile) {
 
     cout << file_to_load << " does not seem to be exist. " << endl;
@@ -46,7 +46,7 @@ int main()
     ClusterParse cluster;
 
     // Reads in the user input file.
-    cluster.readIn(clutoFile);
+    cluster.readIn(clutoFile); 
     cluster.printTree(std::cout);
   }
 

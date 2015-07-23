@@ -1,5 +1,7 @@
 /*
  * Clusterparse.cpp
+ *  
+ * This data structure was created to reconsitute a 
  */
 
 #include <string>
@@ -17,7 +19,7 @@ using namespace std;
 ClusterParse::ClusterParse(){
     vector<Node> clusterArray;
     clusterTree_ = clusterArray;
-    numRecords_ = 0;
+    numNodes_ = 0;
 }
 
 // Destructor for the ClusterParse
@@ -30,6 +32,10 @@ ClusterParse::~ClusterParse(){
  *    child node if one is available, and throws an error if
  *    one is not.  */
 void ClusterParse::setChild(size_t child, size_t parent){
+
+    if (numNodes_ > parent){
+        std::cout << "Error: parent node does not exist." << std::endl; 
+    }
     //If there is no left child...
     if (leftChild(parent) == false){
         //Set it.
@@ -45,6 +51,8 @@ void ClusterParse::setChild(size_t child, size_t parent){
             //Otherwise, throw an error.
             std::cout << "Error:  Input tree is not a binary Tree; " <<
             "too many child nodes" << std::endl;
+            std::cout << "Existing Children of node " << parent << "are " << 
+            getRightChild(parent) << " & " << getLeftChild(parent) << std::endl; 
         }
     }
 }
@@ -55,6 +63,9 @@ void ClusterParse::setChild(size_t child, size_t parent){
  *     a node which has not had the left child initialized.  This will Cause
  *     Problems; do not do that. */
 size_t ClusterParse::getLeftChild(size_t parent){
+    if (parent > numNodes_){
+        std::cout << "Error:  Parent node does not exist. " << std::endl; 
+    }
     return clusterTree_[parent].left_;
 }
 
@@ -64,6 +75,9 @@ size_t ClusterParse::getLeftChild(size_t parent){
  *     a node which has not had the right child initialized.  This will Cause
  *     Problems; do not do that. */
 size_t ClusterParse::getRightChild(size_t parent){
+    if (parent > numNodes_){
+        std::cout << "Error:  Parent node does not exist. " << std::endl; 
+    }
     return clusterTree_[parent].right_;
 }
 
@@ -113,6 +127,11 @@ bool ClusterParse::rightChild(size_t parent){
 
 /* Checks to see if the node "parent" has child node "child" */ 
 bool ClusterParse::isChild(size_t child, size_t parent){
+    if (parent > numNodes_){
+        std::cout << "Error:  Invalid node index, greater than" <<
+                     "size of tree. " << std::endl; 
+        return false; 
+    }
     if (leftChild(parent) == true && getLeftChild(parent) == child)
         return true;
     if (rightChild(parent) == true && getRightChild(parent) == child){
@@ -123,10 +142,14 @@ bool ClusterParse::isChild(size_t child, size_t parent){
 
 /* Returns the idex of the parent of a child node passed. Again,
  *     assumes the child should exist, and the parent data member
- *     must be initialized to a nonzero number. */
+ *     must be initialized to a nonzero number.  If (1) the child does
+ *     not exist, or (2) the parent has not yet been set, then the function
+ *     will return 0. */
 size_t ClusterParse::getParent(size_t child){
     size_t parent = clusterTree_[child].parent_;
-    if (parent == 0){
+    if (child > numNodes_){
+        std::cout << "child has not been added to the tree." << std::endl; 
+        return 0; 
     }
     return parent;
 }
@@ -139,10 +162,10 @@ size_t ClusterParse::getParent(size_t child){
 void ClusterParse::setParent(size_t child, size_t parent){
     //If the child has already been set to a different parent previously, then we have
     // a problem in our parsing of the tree.
-    if (getParent(child) != (size_t) 0 && getParent(child) != parent){
+    if (getParent(child) != parent && getParent(child) != 0){
         std::cout << "The parent has already been set to another value" << std::endl;
         std::cout << "The previous parent was: " << getParent(child) << std::endl;
-        std::cout << "The new parent is: " << getParent(child) << std::endl;
+        std::cout << "The new parent is: " << parent << std::endl;
     }
     else{
         //Otherwise, we can just set the parent.
@@ -159,10 +182,15 @@ size_t ClusterParse::getHeight(size_t node) {
     return clusterTree_[node].height_;
 }
 
+/* Returns the index of the root of the tree. */ 
+size_t ClusterParse::getRoot(){
+    return numNodes_; 
+}
+
 /*  Inserts a node, based on the line read in from a cluto output record.
  *     NOTE:  Should check for a valid parent value before it is added. */
-void ClusterParse::insert(size_t child, size_t parent){
-    numRecords_ += 1;
+void ClusterParse::insert(size_t child, size_t parent){ 
+    numNodes_ += 1;
     std::cout.flush(); 
 
     //First, we check and see if the vector is large enough.
@@ -192,7 +220,8 @@ void ClusterParse::insert(size_t child, size_t parent){
 std::ostream& ClusterParse::printTree(std::ostream& out){
     /* Most of the work for this function is done in printNode, recursively.
     * This is just a wrapper function. */
-    printNode(numRecords_, out);
+    printNode(numNodes_ , out);
+    out << "\n"; 
     return out;  
 
 }
@@ -276,11 +305,10 @@ void ClusterParse::readIn(ifstream& inputstream)
                     counter += 1;
                 } 
                 else {
-                    //We keep track of the root by making its "parent" itself.
-                    clusterTree_[counter].parent_ = counter;
+                    //We do nothing if the "node" is the parent node. 
                 }
-            //If we are at the root, then we are done.
-            parentIndex = "";
+                //We reset our accumulator for the next loop through. 
+                parentIndex = "";
             }
             else {
                 /* Otherwise we append the character we just read to our accumulator and
@@ -291,5 +319,35 @@ void ClusterParse::readIn(ifstream& inputstream)
     inputstream.close();
 }
 
+std::vector<size_t> ClusterParse::formatOutput(){
+    std::vector<size_t>* leafList = new std::vector<size_t>; 
+    traverseTree(numNodes_ , leafList); 
+    return *leafList;  
+}
 
+void ClusterParse::traverseTree(size_t node, std::vector<size_t>* leafList){
+    bool left = leftChild(node);
+    bool right = rightChild(node);
+    if (left == false && right == false){
+        leafList->push_back(node);
+    }
+    else{
+        if (left == true && right == false){
+            /*If we have a left tree, but no right, print the left subtree */
+            traverseTree(getLeftChild(node), leafList);
+            leafList->push_back(node);
+        }
+        if (left == true && right == true){
+            /*If we have both, print both subtrees */
+            traverseTree(getLeftChild(node), leafList);
+            leafList->push_back(node);
+            traverseTree(getRightChild(node), leafList);
+        }
+        if (left == false && right == true){
+            leafList->push_back(node);
+            /* If we just have the right, print that one. */
+            traverseTree( getRightChild(node), leafList);
+        }
+    }
+}
 

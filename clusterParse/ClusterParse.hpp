@@ -21,6 +21,8 @@
 *    are set.  For a parent, it is possible to just initialize every parent to 0.  In that
 *    way we can check if the parent is set, because 0 is necessarily a leaf, and no one's
 *    parent.  The same cannot be said of children nodes.
+*   
+* Meant to eventually be included in the TraceSet data structure. 
 *
 */
 
@@ -63,8 +65,8 @@ public:
 };
 ///Data structure management functions///
 
-    /* Sets the parent's node to the child. */
-    void setChild(size_t child, size_t parent);
+    /* Returns true if the child node is a child of the parent node. */ 
+    bool isChild(size_t child, size_t parent); 
 
     /* Returns a size_t which specifies the location of the left child
      *     of the parent node within the array. */
@@ -74,12 +76,6 @@ public:
      *     of the parent node within the array. */
     size_t getRightChild(size_t parent);
 
-    /* sets the left child of the parent node to the child size_t.  */
-    void setLeftChild(size_t child, size_t parent);
-
-    /* sets the right child of the parent node to the child size_t. */
-    void setRightChild(size_t child, size_t parent);
-
     /* Returns true if the parent's left child is set;
      *     and false if it is not. */
     bool leftChild(size_t parent);
@@ -88,17 +84,15 @@ public:
     *     and false if it is not.  */
     bool rightChild(size_t parent);
 
-    /* Returns true if the child node is a child of the parent node. */ 
-    bool isChild(size_t child, size_t parent); 
-
     /* Returns the parent of the specified child node if set, 0 otherwise. */
     size_t getParent(size_t child);
 
-    /* Sets the "parent" data member of the child node to the index passed. */
-    void setParent(size_t child, size_t parent);
 
     /* Returns the height from the bottom of the tree of the node passed  */
     size_t getHeight(size_t node);
+
+    /* Returns the root of the tree. */ 
+    size_t getRoot(); 
 
 ///Printing and I/O functions///
 
@@ -120,11 +114,38 @@ public:
     /*  Reads in from a file specified. */
     void readIn(std::ifstream& inputstream);
 
+    /* Creates a vector a size_ts in the order of leaves on the tree.  
+     *     Created to pass the vector to the TraceSet data structure. */ 
+    std::vector<size_t> formatOutput(); 
+
+    /* A helper function for formatOutput which traverses the tree adding a node
+     *     to the vector only when it is a leaf (with no children) and is therefore
+     *     in the original adjacency matrix fed into the cluto algorithm. */ 
+    void traverseTree(size_t node, std::vector<size_t>* leafList); 
+
+
 private:
+
+
+    /* Sets the parent's node to the child. */
+    void setChild(size_t child, size_t parent);
+
+    /* sets the left child of the parent node to the child size_t.  */
+    void setLeftChild(size_t child, size_t parent);
+
+    /* sets the right child of the parent node to the child size_t. */
+    void setRightChild(size_t child, size_t parent);
+
+    /* Sets the "parent" data member of the child node to the index passed. */
+    void setParent(size_t child, size_t parent);
+
+
     std::vector<Node> clusterTree_; /* Contains the data structure of the
                                        * tree within an array. */
-    size_t numRecords_;               /* Holds the number of records in the
-                                       * tree, or the index of the root. */
+    size_t numNodes_;               /* Holds the number of records in the
+                                       * tree, or the index of the root. 
+                                       * NOTE:  DOES NOT CONTAIN THE NUMBER 
+                                       *     OF ITEMS CLUSTERED. */ 
 };
 
 #endif // CLUSTERPARSE_HPP_INCLUDED
