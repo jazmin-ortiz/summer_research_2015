@@ -14,7 +14,8 @@
 
 #include <vector>
 #include <unordered_map>
-
+#include <fstream>
+#include <string>
 
 class FrequentPairs{
 
@@ -74,6 +75,15 @@ public:
    * not guaranteed to insert LBAs properly.
    */
   void readInFrequentLBAs(std::ifstream& inputstream);
+
+  /**
+   * function: createAsciiMatrix()
+   *
+   * This function creates a stream object that can be written to a .txt and
+   * is correctly formatted dense graph format that can be used and read by the
+   * the Cluto clustering algorithm.
+   */
+  std::fstream createAsciiMatrix();
 
   /**
    * function: fillInFrequentMatrix()

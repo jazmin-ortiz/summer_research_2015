@@ -158,6 +158,55 @@ void FrequentPairs::readInFrequentLBAs(ifstream& inputstream)
 }
 
 /**
+ * function: createAsciiMatrix()
+ *
+ * This function creates a stream object that can be written to a .txt and
+ * is correctly formatted dense graph format that can be used and read by the
+ * the Cluto clustering algorithm.
+ *
+ * This function creates the stream object by first calling the
+ * fillInFrequentMatrix() function that creates the adjacency matrix
+ * of frequent LBAs created from the FrequentLBAs_ and FrequentLBAsTable_ and
+ * writing it properly to the stream object.
+ */
+fstream FrequentPairs::createAsciiMatrix()
+{
+
+  vector< vector<size_t> > adjacency_matrix = fillInFrequentMatrix();
+
+  // The total number of LBAs which can be seen as the size of the
+  // first row of the matrix since this is an n by n matrix of LBAs.
+  size_t num_LBAs = adjacency_matrix.size();
+
+  fstream matrix_file;
+
+  // The line in the file must be the number of vertices in the graph
+  matrix_file << num_LBAs << endl;
+
+  // The next n lines in the file will each contain information about the
+  // columns of the adjacency matrix. The ith line in the file contains
+  // n space separated floating point values which are the values held in the
+  // i - 1 row in the adjacency_matrix .
+  for (size_t i = 0; i < num_LBAs; ++i) {
+    for (size_t j = 0; j < num_LBAs - i; ++j) {
+
+      matrix_file << adjacency_matrix[i][j];
+      matrix_file << " ";
+
+    }
+
+    // Add in the last value which is in the last column which is  at index
+    // num_LBAs-1, then end the line so that there is no space at the end
+    // of the line.
+    matrix_file << adjacency_matrix[i][num_LBAs-1] << endl;
+
+  }
+
+  return matrix_file;
+
+}
+
+/**
  * function: insert_LBA_into_Sequence(string LBA)
  *
  * Helper function for readInSequence(). Takes in a string s which is a LBA
@@ -218,14 +267,14 @@ void FrequentPairs::insert_Frequent_LBA(string LBA)
  * pair in the adjacency matrix.
  *
  */
-std::vector<std::vector<std::size_t>> FrequentPairs::fillInFrequentMatrix()
+vector< vector<size_t> > FrequentPairs::fillInFrequentMatrix()
 {
 
   // The matrix will be an n by n matrix where n is the number of LBAs in
   // FrequentLBAs_, so here we create a varaiable which is the number of LBAs.
   size_t num_LBAs = FrequentLBAs_.size();
 
-  vector<vector<size_t>> adjacency_matrix(num_LBAs, vector<size_t>(num_LBAs));
+  vector< vector<size_t> > adjacency_matrix(num_LBAs, vector<size_t>(num_LBAs));
 
   // Loop through and set all size_ts to 0 in adjacency matrix to 0 so that we
   // can later increment these values to reflect the number of times frequent
