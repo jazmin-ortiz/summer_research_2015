@@ -200,9 +200,6 @@ void FrequentPairs::insert_Frequent_LBA(string LBA)
 
 }
 
-
-
-
 /**
  * function: fillInFrequentMatrix()
  *
@@ -211,6 +208,15 @@ void FrequentPairs::insert_Frequent_LBA(string LBA)
  * that was mapped to that index in the FrequentLBAs_ vector, the value at
  * index (i,j) is the number of times that the LBAS mapped to i and j are
  * consecutive in the Sequences_ data member.
+ *
+ * The indices in the matrix are properly updated by looping through the
+ * Sequence_ matrix and for each value checking if it and the following LBA are
+ * frequent by checking if they are in the hash table FrequentLBAsTable_. The
+ * value of an LBA in FrequentLBAsTable_ that is thier index in the
+ * FrequentLBAs_ vector, this fact will then be used to find quickly and then
+ * properly increment values held at the indices corresponding to a frequent LBA
+ * pair in the adjacency matrix.
+ *
  */
 std::vector<std::vector<std::size_t>> FrequentPairs::fillInFrequentMatrix()
 {
@@ -232,21 +238,6 @@ std::vector<std::vector<std::size_t>> FrequentPairs::fillInFrequentMatrix()
     }
   }
 
-  // Now that all values in the adjacency matrix have been set to 0, the
-  // adjacency matrix will now be filled by looping through the Sequence_
-  // matrix and for each value checking if it and the following LBA are frequent
-  // by checking if they are in the hash table FrequentLBAsTable_.
-  //
-  // If they are both frequent then thier values, i and j in the in the
-  // FrequentLBAsTable_ will be thier indices in the FrequentLBAs_ vector and
-  // therefore also be thier row/column in adjacency_matrix, so we will use
-  // thier values to properly increment the elements at indices (i,j) and (j,i)
-  // in the adjacency matrix by 1.
-  //
-  // If they are not both frequent then nothing will happen and the next LBA
-  // in Sequences_ will be considered.
-
-  // Temp variables for the following loop
   unordered_map<size_t, size_t>::iterator LBA_it;
   unordered_map<size_t, size_t>::iterator next_LBA_it;
   size_t LBA;
