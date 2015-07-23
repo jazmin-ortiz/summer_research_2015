@@ -17,7 +17,7 @@ using namespace std;
 //           TEST FUNCTIONS
 //--------------------------------------------------
 
-/// Test pushing back on an empty list (also tests default construction).
+/// Tests default construction.
 TEST(constructor, default_constructor)
 {
     TraceSet test;
