@@ -167,7 +167,7 @@ void FrequentPairs::readInFrequentLBAs(ifstream& inputstream)
  * This function creates the stream object by first calling the
  * fillInFrequentMatrix() function that creates the adjacency matrix
  * of frequent LBAs created from the FrequentLBAs_ and FrequentLBAsTable_ and
- * writing it properly to the stream object.
+ * the formats it properly and writes to the stream object.
  */
 fstream FrequentPairs::createAsciiMatrix()
 {
@@ -261,20 +261,23 @@ void FrequentPairs::insert_Frequent_LBA(string LBA)
  * The indices in the matrix are properly updated by looping through the
  * Sequence_ matrix and for each value checking if it and the following LBA are
  * frequent by checking if they are in the hash table FrequentLBAsTable_. The
- * value of an LBA in FrequentLBAsTable_ that is thier index in the
+ * value of an LBA in FrequentLBAsTable_ is thier index in the
  * FrequentLBAs_ vector, this fact will then be used to find quickly and then
  * properly increment values held at the indices corresponding to a frequent LBA
  * pair in the adjacency matrix.
  *
+ * NOTE: The values held in the adjacency matrix are floats instead of size_ts
+ * because the function createAsciiMatrix needs floats so that it can properly
+ * format its output.
  */
-vector< vector<size_t> > FrequentPairs::fillInFrequentMatrix()
+vector< vector<float> > FrequentPairs::fillInFrequentMatrix()
 {
 
   // The matrix will be an n by n matrix where n is the number of LBAs in
   // FrequentLBAs_, so here we create a varaiable which is the number of LBAs.
   size_t num_LBAs = FrequentLBAs_.size();
 
-  vector< vector<size_t> > adjacency_matrix(num_LBAs, vector<size_t>(num_LBAs));
+  vector< vector<float> > adjacency_matrix(num_LBAs, vector<size_t>(num_LBAs));
 
   // Loop through and set all size_ts to 0 in adjacency matrix to 0 so that we
   // can later increment these values to reflect the number of times frequent
@@ -282,7 +285,7 @@ vector< vector<size_t> > FrequentPairs::fillInFrequentMatrix()
   for (size_t j = 0; j < num_LBAs; ++j) {
     for (size_t i = 0; i < num_LBAs; ++i) {
 
-      adjacency_matrix[j][i] = 0;
+      adjacency_matrix[j][i] = 0.0;
 
     }
   }
@@ -293,7 +296,7 @@ vector< vector<size_t> > FrequentPairs::fillInFrequentMatrix()
   size_t next_LBA;
   size_t LBAs_index;
   size_t next_LBAs_index;
-  size_t new_value;
+  float new_value;
 
   // Since we are comparing an LBA and the following LBA if we loop all the way
   // until the last element and try to check the last element against the
@@ -328,9 +331,9 @@ vector< vector<size_t> > FrequentPairs::fillInFrequentMatrix()
 
       // These values are the indices of these LBAS in adjacency_matrix, so
       // the values held at indices (LBAs_value, next_LBAs_value) and
-      // (next_LBAs_value, LBAs_value) will both be incremented by 1 since these
-      // appear consecutively in Sequences_.
-      new_value = adjacency_matrix[LBAs_index][next_LBAs_index] + 1;
+      // (next_LBAs_value, LBAs_value) will both be incremented by 1.0 since
+      // these appear consecutively in Sequences_.
+      new_value = adjacency_matrix[LBAs_index][next_LBAs_index] + 1.0;
 
       adjacency_matrix[LBAs_index][next_LBAs_index] = new_value;
       adjacency_matrix[next_LBAs_index][LBAs_index] = new_value;
