@@ -267,7 +267,7 @@ TEST(fillInFrequentMatrix, small_no_adjacent_frequent_LBAs)
 
     }
 
-    vector< vector<size_t> > adjacency_matrix = test.fillInFrequentMatrix();
+    vector< vector<float> > adjacency_matrix = test.fillInFrequentMatrix();
 
     // Make sure all rows and cols are the correct size
     assert(adjacency_matrix.size() == 5);
@@ -282,7 +282,7 @@ TEST(fillInFrequentMatrix, small_no_adjacent_frequent_LBAs)
     for (size_t i = 0; i < 5; ++i) {
         for (size_t j = 0; j < 5; ++j) {
 
-            assert(adjacency_matrix[i][j] == 0);
+            assert(adjacency_matrix[i][j] == 0.0);
 
         }
     }
@@ -314,13 +314,13 @@ TEST(fillInFrequentMatrix, large_no_adjacent_frequent_LBAs)
 
     }
 
-    vector< vector<size_t> > adjacency_matrix = test.fillInFrequentMatrix();
+    vector< vector<float> > adjacency_matrix = test.fillInFrequentMatrix();
 
     // Make sure all rows and cols are the correct size
     assert(adjacency_matrix.size() == 200);
     for (size_t i = 0; i < 200; ++i) {
 
-        assert(adjacency_matrix[i].size() == 200);
+        assert(adjacency_matrix[i].size() == 200.0);
 
     }
 
@@ -329,7 +329,7 @@ TEST(fillInFrequentMatrix, large_no_adjacent_frequent_LBAs)
     for (size_t i = 0; i < 200; ++i) {
         for (size_t j = 0; j < 200; ++j) {
 
-            assert(adjacency_matrix[i][j] == 0);
+            assert(adjacency_matrix[i][j] == 0.0);
 
         }
     }
@@ -365,7 +365,7 @@ TEST(fillInFrequentMatrix, frequent_LBAs_adjacent_only_to_themselves)
 
     }
 
-    vector< vector<size_t> > adjacency_matrix = test.fillInFrequentMatrix();
+    vector< vector<float> > adjacency_matrix = test.fillInFrequentMatrix();
 
     // Make sure all rows and cols are the correct size
     assert(adjacency_matrix.size() == 5);
@@ -381,10 +381,10 @@ TEST(fillInFrequentMatrix, frequent_LBAs_adjacent_only_to_themselves)
 
             if (i == j) {
 
-                assert(adjacency_matrix[i][j] == 2);
+                assert(adjacency_matrix[i][j] == 2.0);
             } else {
 
-                assert(adjacency_matrix[i][j] == 0);
+                assert(adjacency_matrix[i][j] == 0.0);
 
             }
 
@@ -423,7 +423,7 @@ TEST(fillInFrequentMatrix, frequent_LBAs_adjacent_only_to_themselves_large)
 
     }
 
-    vector< vector<size_t> > adjacency_matrix = test.fillInFrequentMatrix();
+    vector< vector<float> > adjacency_matrix = test.fillInFrequentMatrix();
 
     // Make sure all rows and cols are the correct size
     assert(adjacency_matrix.size() == 200);
@@ -439,10 +439,10 @@ TEST(fillInFrequentMatrix, frequent_LBAs_adjacent_only_to_themselves_large)
 
             if (i == j) {
 
-                assert(adjacency_matrix[i][j] == 4);
+                assert(adjacency_matrix[i][j] == 4.0);
             } else {
 
-                assert(adjacency_matrix[i][j] == 0);
+                assert(adjacency_matrix[i][j] == 0.0);
 
             }
 
@@ -493,7 +493,7 @@ TEST(fillInFrequentMatrix, frequent_LBAs_adjacent_large)
 
     }
 
-    vector< vector<size_t> > adjacency_matrix = test.fillInFrequentMatrix();
+    vector< vector<float> > adjacency_matrix = test.fillInFrequentMatrix();
 
     // Make sure all rows and cols are the correct size
     assert(adjacency_matrix.size() == 200);
@@ -508,17 +508,17 @@ TEST(fillInFrequentMatrix, frequent_LBAs_adjacent_large)
 
             if (i == j) {
 
-                assert(adjacency_matrix[i][j] == 4);
+                assert(adjacency_matrix[i][j] == 4.0);
 
             }
 
             else if (i+1 == j || i == j+1) {
 
-                assert(adjacency_matrix[i][j] == 1);
+                assert(adjacency_matrix[i][j] == 1.0);
 
             } else {
 
-                assert(adjacency_matrix[i][j] == 0);
+                assert(adjacency_matrix[i][j] == 0.0);
 
             }
 

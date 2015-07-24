@@ -95,7 +95,7 @@ public:
    * (i,j) is the number of times that the LBAS mapped to i and j
    * are consecutive in the Sequence_ data member.
    */
-  std::vector<std::vector<std::size_t>> fillInFrequentMatrix();
+  std::vector<std::vector<float>> fillInFrequentMatrix();
 
   /**
    * function: insert_LBA_into_Sequence(string LBA)

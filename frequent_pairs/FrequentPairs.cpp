@@ -172,7 +172,7 @@ void FrequentPairs::readInFrequentLBAs(ifstream& inputstream)
 fstream FrequentPairs::createAsciiMatrix()
 {
 
-  vector< vector<size_t> > adjacency_matrix = fillInFrequentMatrix();
+  vector< vector<float> > adjacency_matrix = fillInFrequentMatrix();
 
   // The total number of LBAs which can be seen as the size of the
   // first row of the matrix since this is an n by n matrix of LBAs.
@@ -277,7 +277,7 @@ vector< vector<float> > FrequentPairs::fillInFrequentMatrix()
   // FrequentLBAs_, so here we create a varaiable which is the number of LBAs.
   size_t num_LBAs = FrequentLBAs_.size();
 
-  vector< vector<float> > adjacency_matrix(num_LBAs, vector<size_t>(num_LBAs));
+  vector< vector<float> > adjacency_matrix(num_LBAs, vector<float>(num_LBAs));
 
   // Loop through and set all size_ts to 0 in adjacency matrix to 0 so that we
   // can later increment these values to reflect the number of times frequent
