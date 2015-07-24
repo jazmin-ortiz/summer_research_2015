@@ -59,7 +59,7 @@ public:
    * and adds each LBA in the text file to the FrequentPairs data members
    * apropriately.
    */
-  void readInSequence(std::ifstream& inputstream);
+  void readInSequence(std::fstream& inputstream);
 
   /**
    * function: ReadInFrequentLBAs(ifstream& inputstream)
@@ -74,16 +74,16 @@ public:
    * unique, if an LBA occurs more than once in the .txt file this function is
    * not guaranteed to insert LBAs properly.
    */
-  void readInFrequentLBAs(std::ifstream& inputstream);
+  void readInFrequentLBAs(std::fstream& inputstream);
 
   /**
-   * function: createAsciiMatrix()
+   * function: createAsciiMatrix(string matrix_file_to_load)
    *
-   * This function creates a stream object that can be written to a .txt and
-   * is correctly formatted dense graph format that can be used and read by the
-   * the Cluto clustering algorithm.
+   * This function takes in a string which is the name of an empty .txt file and
+   * creates and inserts a correctly formatted dense graph format file in the
+   * .txt file can be used and read by the the Cluto clustering algorithm.
    */
-  std::fstream createAsciiMatrix();
+  void createAsciiMatrix(std::string matrix_file_to_load);
 
   /**
    * function: fillInFrequentMatrix()
