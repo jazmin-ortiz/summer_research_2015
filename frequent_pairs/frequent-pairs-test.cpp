@@ -594,12 +594,22 @@ TEST(readFrequentLBAs, small_backwards)
 
     }
 }
+/**
+TEST(createAsciiMatrix, small)
+{
 
+    FrequentPairs test;
+    fstream sequence;
+    fstream frequentLBAs;
 
+    sequence.open("gtest_smallSequence1.txt");
+    frequentLBAs.open("gtest_smallFrequentLBAs1.txt");
 
+    test.readInSequence(sequence);
+    test.readInFrequentLBAs(frequentLBAs);
 
-
-
+}
+*/
 
 //--------------------------------------------------
 //           RUNNING THE TESTS
