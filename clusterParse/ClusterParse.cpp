@@ -276,15 +276,17 @@ void ClusterParse::printChildren(size_t parent){
 }
 
 /* */
-void ClusterParse::readIn(ifstream& inputstream)
+void ClusterParse::readIn(ifstream& inputstream, bool test)
 {
     /* The most recently read character and an accumulator to hold the
      *     numbers that are read in as a string from stdin until we are
      *     ready to process them.  */
     char c;
     string parentIndex = "";
-    size_t counter = 0; /* Keeps track of how many lines we have already seen, or the
-                         * identity of the current line. */
+    size_t counter = 0; /* Keeps track of how many lines we have already seen,
+                         * or the identity of the current line. */
+    int lineIndex = 2;      /* Keeps track of the index of the number we are
+                             *     currently looking at on the line. */ 
 
     /* While loop to read in a text file from stdin. */
     while (inputstream.get(c)) {
@@ -292,20 +294,27 @@ void ClusterParse::readIn(ifstream& inputstream)
         if (inputstream.eof()){
             return; 
         }
-        /* If we have hit a newline, it means that the end of the current index has
-         *     been encountered, which means that we should insert it into our
-        *     clusterTree_ vector, after checking to make sure that it is not
-        *     the root. */
-            if ( c == '\n' ) {
+        /* If we have hit a newline, it means that the end of the current index 
+         *    has been encountered, which means that we should insert it into 
+        *     our clusterTree_ vector, after checking to make sure that it 
+        *     is not the root. */ 
+            if ( c == ' ' || c == '\n' ) {
                 //We check to make sure that we are not at the root...
-                if (parentIndex != "-1"){
+                if (parentIndex != "-1" && (lineIndex % 3 )== 2){
                     size_t value = stoi(parentIndex); 
                     insert(counter, value);
                     parentIndex = "";
                     counter += 1;
+                    if (! test){
+                    lineIndex  = 0; 
+                    }
                 } 
                 else {
-                    //We do nothing if the "node" is the parent node. 
+                    //We do nothing if the "node" is the parent node, or if we
+                    //are dealing with the next iteration of the loop.  
+                    if (! test){
+                    lineIndex += 1;
+                    } 
                 }
                 //We reset our accumulator for the next loop through. 
                 parentIndex = "";
@@ -335,16 +344,13 @@ void ClusterParse::traverseTree(size_t node, std::vector<size_t>* leafList){
         if (left == true && right == false){
             /*If we have a left tree, but no right, print the left subtree */
             traverseTree(getLeftChild(node), leafList);
-            leafList->push_back(node);
         }
         if (left == true && right == true){
             /*If we have both, print both subtrees */
             traverseTree(getLeftChild(node), leafList);
-            leafList->push_back(node);
             traverseTree(getRightChild(node), leafList);
         }
         if (left == false && right == true){
-            leafList->push_back(node);
             /* If we just have the right, print that one. */
             traverseTree( getRightChild(node), leafList);
         }

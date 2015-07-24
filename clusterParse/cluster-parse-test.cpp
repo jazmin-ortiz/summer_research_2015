@@ -31,7 +31,7 @@ ClusterParse fileTestTree(){
     ClusterParse test;
     string filename = "test1";
     ifstream testFile(filename);
-    test.readIn(testFile); 
+    test.readIn(testFile, true); 
     return test; 
 }
 /* Makes and returns a stick with 3 elements. */ 
@@ -157,9 +157,41 @@ TEST(getRoot, largeStick){
  *     setParent and setChild */ 
 TEST(getRoot, fullTree){
     ClusterParse test = fileTestTree(); 
-
     assert(test.getRoot() == 18); 
+}
 
+/* Checks the properties of the vector from formatOutput for small
+ *     trees. */ 
+TEST(formatOutput, smallStick){
+    ClusterParse test = smallStickTree(); 
+    std::vector<size_t> result = test.formatOutput();
+
+    assert(result.size() == 1); 
+    for (size_t i = 0; i < result.size(); ++i){
+        assert(result[i] == i); 
+    }
+}
+
+
+TEST(formatOutput, largeStick){
+    ClusterParse test = largeStickTree(); 
+    std::vector<size_t> result = test.formatOutput(); 
+
+    assert(result.size() == 1); 
+    for (size_t i = 0; i < result.size(); ++i){
+        assert(result[i] == i); 
+    }
+}
+/* Checks the properties of the vector from formatOutput for 
+ *     a larger, balanced tree. */ 
+TEST(formatOutput, balancedTree){
+    ClusterParse test = balancedTree(); 
+    std::vector<size_t> result = test.formatOutput();
+
+    assert(result.size() == 8); 
+    for (size_t i = 0; i < result.size(); ++i){
+        assert(result[i] == i); 
+    }
 }
 
 
@@ -181,9 +213,6 @@ TEST(getParent, smallTree)
     assert(test.getParent(4) == 5); 
 }
 
-TEST(isChild, smallTree){
-
-}
 /// Test insert when taking in only the same character
 TEST(getChild, smallTree)
 {

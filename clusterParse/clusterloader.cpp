@@ -46,7 +46,7 @@ int main()
     ClusterParse cluster;
 
     // Reads in the user input file.
-    cluster.readIn(clutoFile); 
+    cluster.readIn(clutoFile, false); 
     cluster.printTree(std::cout);
   }
 

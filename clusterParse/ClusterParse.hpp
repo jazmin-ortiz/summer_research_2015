@@ -87,7 +87,6 @@ public:
     /* Returns the parent of the specified child node if set, 0 otherwise. */
     size_t getParent(size_t child);
 
-
     /* Returns the height from the bottom of the tree of the node passed  */
     size_t getHeight(size_t node);
 
@@ -112,7 +111,7 @@ public:
     void printChildren(size_t parent);
 
     /*  Reads in from a file specified. */
-    void readIn(std::ifstream& inputstream);
+    void readIn(std::ifstream& inputstream, bool test);
 
     /* Creates a vector a size_ts in the order of leaves on the tree.  
      *     Created to pass the vector to the TraceSet data structure. */ 
