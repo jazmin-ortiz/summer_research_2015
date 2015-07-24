@@ -528,6 +528,75 @@ TEST(fillInFrequentMatrix, frequent_LBAs_adjacent_large)
 
 }
 
+TEST(readInSequence, small)
+{
+
+    FrequentPairs test;
+    fstream sequence;
+
+    sequence.open("gtest_smallSequence1.txt");
+    test.readInSequence(sequence);
+
+    vector<size_t> test_sequence = test.get_Sequence();
+
+    assert(test_sequence.size() == 21);
+
+    for (size_t i = 0; i < 21; ++i) {
+
+        assert(test_sequence[i] == i);
+    }
+}
+
+TEST(readInSequence, small_backward)
+{
+
+    FrequentPairs test;
+    fstream sequence;
+
+    sequence.open("gtest_smallSequence2.txt");
+    test.readInSequence(sequence);
+
+    vector<size_t> test_sequence = test.get_Sequence();
+
+    assert(test_sequence.size() == 21);
+
+    for (size_t i = 0; i < 21; ++i) {
+
+        assert(test_sequence[i] == 20 - i);
+    }
+}
+
+TEST(readFrequentLBAs, small_backwards)
+{
+
+    FrequentPairs test;
+    fstream frequentLBAs;
+
+    frequentLBAs.open("gtest_smallFrequentLBAs2.txt");
+    test.readInFrequentLBAs(frequentLBAs);
+
+    vector<size_t> test_freqLBAs = test.get_FrequentLBAs();
+    unordered_map<size_t, size_t> test_table = test.get_FrequentLBAsTable();
+
+    assert(test_freqLBAs.size() == 5);
+    assert(test_table.size() == 5);
+
+    unordered_map<size_t, size_t>::iterator it;
+    size_t tables_value;
+    for (size_t i = 0; i < 4; ++i) {
+
+        assert(test_freqLBAs[i] == 16 - 4*i);
+
+        it = test_table.find(4*i);
+        tables_value = it->second;
+
+        assert(tables_value == 4 - i);
+
+    }
+}
+
+
+
 
 
 
