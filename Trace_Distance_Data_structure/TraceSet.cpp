@@ -213,7 +213,7 @@ void TraceSet::readIn(ifstream& inputstream)
 
   }
 
-  inputstream.close();
+  //  inputstream.close();
 }
 
 
