@@ -10,6 +10,7 @@
 #include "gtest/gtest.h"
 
 #include <memory>
+#include <fstream> 
 
 using namespace std;
 
@@ -467,6 +468,35 @@ TEST(change_locations, first_from_middle)
 
         assert(test_locations[i].used == false);
         assert(test_mapLBA[i].used == false);
+    }
+
+}
+
+TEST(readLBAs, consecutive){
+    //We create a test TraceSet and open the file to be 
+    //read from for this test. 
+    TraceSet test; 
+    string fileName = "consecutiveReadTest"; 
+    ifstream testFile(fileName);
+
+    std::vector<size_t> results = test.readLBAs(testFile); 
+
+    for (size_t i = 0; i < results.size(); ++i){
+        assert(results[i] == i); 
+    }
+}
+
+TEST(readLBAs, nonConsecutive){
+    TraceSet test; 
+    string fileName = "nonconsecutiveReadTest"; 
+    ifstream testFile(fileName);
+
+    std::vector<size_t> results = test.readLBAs(testFile); 
+
+    size_t count = 1; 
+    for (size_t i = 0; i < results.size(); ++i){
+        assert(results[i] == count); 
+        count += 2;
     }
 
 }

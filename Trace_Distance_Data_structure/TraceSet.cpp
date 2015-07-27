@@ -216,6 +216,46 @@ void TraceSet::readIn(ifstream& inputstream)
   //  inputstream.close();
 }
 
+/**
+ * function: readLBAs(ifstream& inputstream)
+ *
+ * Reads in from standard in a list of numbers (one per line) 
+ *     and returns a vector of those size_ts in the order that 
+ *     that they were seen.
+ */
+
+std::vector<size_t> TraceSet::readLBAs(ifstream& inputstream)
+{
+
+
+    char c;
+    string current_LBA = "";
+    std::vector<size_t> freqLBAs; 
+
+    while (inputstream.get(c)) {
+    // Makes sure that streamn closes if eof char is seen
+        if (inputstream.eof()){
+            inputstream.close(); 
+            return freqLBAs;
+        }
+        // Checks if a newline has been encountered which means that the
+        // the current LBA has been completed and if so inserts it into the
+        // Sequence_ vector.
+        else if ( c == '\n' ) {
+            freqLBAs.push_back(stoi(current_LBA));
+            current_LBA = "";
+        }
+        // If a newline char has not been seen continues to push chars onto
+        // current_LBA
+        else {
+            current_LBA.push_back(c);
+        }
+    }
+    inputstream.close();
+    return freqLBAs; 
+
+}
+
 
 
 /**

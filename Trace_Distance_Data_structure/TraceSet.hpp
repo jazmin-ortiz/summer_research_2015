@@ -129,6 +129,12 @@ public:
   /// apropriately.
   void readIn(std::ifstream& inputstream);
 
+  /// Reads in a text file where each line in the text file contains
+  /// a frequent LBA, which will be part of the "hot" partition in our
+  /// final disk arrangment.  
+
+  std::vector<size_t> readLBAs(std::ifstream& inputstream); 
+
 
   /// This function takes in a size_t which is an LBA and returns
   /// a vector of size_ts which represent the indices of all
