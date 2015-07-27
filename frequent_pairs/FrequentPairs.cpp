@@ -73,7 +73,7 @@ vector<size_t>& FrequentPairs::get_FrequentLBAs()
  * Reads in LBAs from standard in and inserts LBAs into the
  * Sequences_ data member.
  */
-void FrequentPairs::readInSequence(ifstream& inputstream)
+void FrequentPairs::readInSequence(fstream& inputstream)
 {
 
   char c;
@@ -117,7 +117,7 @@ void FrequentPairs::readInSequence(ifstream& inputstream)
  * hashtable where the keys are frequent LBAs and the values are the index of
  * that LBA in FrequentLBAs_.
  */
-void FrequentPairs::readInFrequentLBAs(ifstream& inputstream)
+void FrequentPairs::readInFrequentLBAs(fstream& inputstream)
 {
 
   char c;
@@ -158,18 +158,18 @@ void FrequentPairs::readInFrequentLBAs(ifstream& inputstream)
 }
 
 /**
- * function: createAsciiMatrix()
+ * function: createAsciiMatrix(string matrix_file_to_load)
  *
- * This function creates a stream object that can be written to a .txt and
- * is correctly formatted dense graph format that can be used and read by the
- * the Cluto clustering algorithm.
+ * This function takes in a string which is the name of an empty .txt file and
+ * creates and inserts a correctly formatted dense graph format file in the
+ * .txt file can be used and read by the the Cluto clustering algorithm.
  *
  * This function creates the stream object by first calling the
  * fillInFrequentMatrix() function that creates the adjacency matrix
  * of frequent LBAs created from the FrequentLBAs_ and FrequentLBAsTable_ and
  * the formats it properly and writes to the stream object.
  */
-fstream FrequentPairs::createAsciiMatrix()
+void FrequentPairs::createAsciiMatrix(string matrix_file_to_load)
 {
 
   vector< vector<float> > adjacency_matrix = fillInFrequentMatrix();
@@ -178,7 +178,7 @@ fstream FrequentPairs::createAsciiMatrix()
   // first row of the matrix since this is an n by n matrix of LBAs.
   size_t num_LBAs = adjacency_matrix.size();
 
-  fstream matrix_file;
+  fstream matrix_file(matrix_file_to_load);
 
   // The line in the file must be the number of vertices in the graph
   matrix_file << num_LBAs << endl;
@@ -188,23 +188,18 @@ fstream FrequentPairs::createAsciiMatrix()
   // n space separated floating point values which are the values held in the
   // i - 1 row in the adjacency_matrix .
   for (size_t i = 0; i < num_LBAs; ++i) {
-    for (size_t j = 0; j < num_LBAs - i; ++j) {
+    for (size_t j = 0; j < num_LBAs -1; ++j) {
 
       matrix_file << adjacency_matrix[i][j];
       matrix_file << " ";
 
     }
 
-    // Add in the last value which is in the last column which is  at index
-    // num_LBAs-1, then end the line so that there is no space at the end
-    // of the line.
-    matrix_file << adjacency_matrix[i][num_LBAs-1] << endl;
+    matrix_file << endl;
 
   }
 
-  return matrix_file;
-
-}
+}-
 
 /**
  * function: insert_LBA_into_Sequence(string LBA)
