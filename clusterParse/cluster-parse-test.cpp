@@ -164,7 +164,8 @@ TEST(getRoot, fullTree){
  *     trees. */ 
 TEST(formatOutput, smallStick){
     ClusterParse test = smallStickTree(); 
-    std::vector<size_t> result = test.formatOutput();
+    vector<size_t> testVector; 
+    std::vector<size_t> result = test.formatOutput(testVector);
 
     assert(result.size() == 1); 
     for (size_t i = 0; i < result.size(); ++i){
@@ -175,7 +176,8 @@ TEST(formatOutput, smallStick){
 
 TEST(formatOutput, largeStick){
     ClusterParse test = largeStickTree(); 
-    std::vector<size_t> result = test.formatOutput(); 
+    vector<size_t> testVector; 
+    std::vector<size_t> result = test.formatOutput(testVector); 
 
     assert(result.size() == 1); 
     for (size_t i = 0; i < result.size(); ++i){
@@ -186,7 +188,8 @@ TEST(formatOutput, largeStick){
  *     a larger, balanced tree. */ 
 TEST(formatOutput, balancedTree){
     ClusterParse test = balancedTree(); 
-    std::vector<size_t> result = test.formatOutput();
+    vector<size_t> testVector; 
+    std::vector<size_t> result = test.formatOutput(testVector);
 
     assert(result.size() == 8); 
     for (size_t i = 0; i < result.size(); ++i){

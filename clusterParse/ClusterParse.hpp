@@ -33,7 +33,7 @@
 #include <string>
 #include <vector>
 
-
+using namespace std;
 
 class ClusterParse{
 
@@ -100,27 +100,31 @@ public:
     void insert(size_t child, size_t parent);
 
     /* Prints the entire tree. */ 
-    std::ostream& printTree(std::ostream& out);
+    ostream& printTree(ostream& out);
 
     /* A helper function for the printTree function.  Recursively prints the 
      * subtree below the node passed as initial argument. */ 
-    std::ostream& printNode(size_t node, std::ostream& out);
+    ostream& printNode(size_t node, ostream& out);
     
     /* A debugging function which prints all of the data members of the
      *     node specified by the argument. */
     void printChildren(size_t parent);
 
     /*  Reads in from a file specified. */
-    void readIn(std::ifstream& inputstream, bool test);
+    void readIn(ifstream& inputstream, bool test);
 
     /* Creates a vector a size_ts in the order of leaves on the tree.  
      *     Created to pass the vector to the TraceSet data structure. */ 
-    std::vector<size_t> formatOutput(); 
+    vector<size_t> formatOutput(vector<size_t> mapping); 
 
     /* A helper function for formatOutput which traverses the tree adding a node
      *     to the vector only when it is a leaf (with no children) and is therefore
      *     in the original adjacency matrix fed into the cluto algorithm. */ 
+<<<<<<< HEAD
     void traverseTree(size_t node, std::vector<size_t>* leafList);
+=======
+    void traverseTree(size_t node, vector<size_t>* leafList); 
+>>>>>>> f681efb7149517a991e78ea51c996184ecd5175a
 
     /* A function which takes in a tree and returns an fstream object which
      *     contains the tree in the form of a Treefile, where the specifications
@@ -149,7 +153,7 @@ private:
     void setParent(size_t child, size_t parent);
 
 
-    std::vector<Node> clusterTree_; /* Contains the data structure of the
+    vector<Node> clusterTree_; /* Contains the data structure of the
                                        * tree within an array. */
     size_t numNodes_;               /* Holds the number of records in the
                                        * tree, or the index of the root. 
