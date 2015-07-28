@@ -323,6 +323,32 @@ TEST(children, fullTree){
     assert(test.isChild(5, 13));
 }
 
+// test to make sure that formatOutput and formatOutputVector return the same
+// vector
+TEST(formatfunctions, small)
+{
+    ClusterParse test;
+    test.insert(0, 3);
+    test.insert(1, 3);
+    test.insert(3, 5);
+    test.insert(2, 4);
+    test.insert(4, 5);
+
+    vector<size_t> vector1 = test.formatOutput();
+    vector<size_t> vector2 = test.formatOutputVector();
+
+    cout << "Bat Elizabeth" <<endl;
+    cout << vector1.size() <<endl;
+
+    cout << "Jazmin" <<endl;
+    cout << vector2.size() <<endl;
+
+    assert(vector1.size() == vector2.size());
+
+    for(size_t i = 0; i < vector1.size(); ++i) {
+        assert(vector1[i] == vector2[i]);
+    }
+}
 
 
 
