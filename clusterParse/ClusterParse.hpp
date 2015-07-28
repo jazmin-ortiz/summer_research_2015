@@ -27,15 +27,13 @@
 */
 
 
-using namespace std; 
-
 #ifndef CLUSTERPARSE_HPP_INCLUDED
 #define CLUSTERPARSE_HPP_INCLUDED 1
 
 #include <string>
 #include <vector>
 
-
+using namespace std;
 
 class ClusterParse{
 
@@ -117,7 +115,7 @@ public:
 
     /* Creates a vector a size_ts in the order of leaves on the tree.  
      *     Created to pass the vector to the TraceSet data structure. */ 
-    vector<size_t> formatOutput(); 
+    vector<size_t> formatOutput(vector<size_t> mapping); 
 
     /* A helper function for formatOutput which traverses the tree adding a node
      *     to the vector only when it is a leaf (with no children) and is therefore

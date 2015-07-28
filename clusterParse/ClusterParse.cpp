@@ -11,6 +11,8 @@
 #include <vector>
 #include <unordered_map>
 
+
+
 #include "ClusterParse.hpp"
 
 using namespace std;
@@ -328,30 +330,46 @@ void ClusterParse::readIn(ifstream& inputstream, bool test)
     inputstream.close();
 }
 
-vector<size_t> ClusterParse::formatOutput(){
+vector<size_t> ClusterParse::formatOutput(vector<size_t> mapping){
     vector<size_t>* leafList = new vector<size_t>; 
     traverseTree(numNodes_ , leafList); 
+    /*If there is no remapping vector, just return the list of leaves in 
+     * order */ 
+    if (mapping.size() == 0){
+        return *leafList; 
+    }
+    for (size_t i = 0; i < leafList->size(); ++i){
+        (*leafList)[i] = mapping[(*leafList)[i]]; 
+        
+    }
     return *leafList;  
 }
 
+/* Traverses the tree in order, as a helper function for formatOutput.  It 
+ *     pushes each node that it encounters onto the back of a vector, and 
+ *     returns it.  The end result is a vector which contains each leaf 
+ *     in the tree in the order that it appears. */ 
 void ClusterParse::traverseTree(size_t node, vector<size_t>* leafList){
     bool left = leftChild(node);
     bool right = rightChild(node);
+    /* If there are no children, then we are at a leaf, and add ourselves to
+     *     the back of the vector.  */ 
     if (left == false && right == false){
         leafList->push_back(node);
     }
     else{
         if (left == true && right == false){
-            /*If we have a left tree, but no right, print the left subtree */
+            /* If we have a left tree, but no right, add the left subtree's 
+             *    leaves*/
             traverseTree(getLeftChild(node), leafList);
         }
         if (left == true && right == true){
-            /*If we have both, print both subtrees */
+            /*If we have both, add both subtrees's leaves */
             traverseTree(getLeftChild(node), leafList);
             traverseTree(getRightChild(node), leafList);
         }
         if (left == false && right == true){
-            /* If we just have the right, print that one. */
+            /* If we just have the right, print that subtree's leaves */
             traverseTree( getRightChild(node), leafList);
         }
     }
