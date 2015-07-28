@@ -120,8 +120,18 @@ public:
     /* A helper function for formatOutput which traverses the tree adding a node
      *     to the vector only when it is a leaf (with no children) and is therefore
      *     in the original adjacency matrix fed into the cluto algorithm. */ 
-    void traverseTree(size_t node, std::vector<size_t>* leafList); 
+    void traverseTree(size_t node, std::vector<size_t>* leafList);
 
+    /* A function which takes in a tree and returns an fstream object which
+     *     contains the tree in the form of a Treefile, where the specifications
+     *     of the Treefile format are given by Cluto: A clustering toolkit.*/
+    std::fstream makeTreeFile();
+
+   /*
+    * A function that returns a vector of size_ts that represent the leaf nodes
+    *      of the tree and thier order in the tree which is defined by thier
+    *      parent. */
+  std::vector<std::size_t> formatOutputVector();
 
 private:
 
@@ -148,5 +158,4 @@ private:
 };
 
 #endif // CLUSTERPARSE_HPP_INCLUDED
-
 
