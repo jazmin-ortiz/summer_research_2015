@@ -23,8 +23,8 @@ cluster-parse-test:	$(CLUSTERTEST_OBJS)
 	$(CXX) $(LDFLAGS) $(LIBS) $(CXXFLAGS) -o $@ $(CLUSTERTEST_OBJS)
 
 # Calling make test will run the gtest frame work in trace-set-test.cpp 
-test: cluster-parse-test
-	./cluster—parse-test
+test:  cluster-parse-test
+	./cluster-parse-test
 
 cluster-parse: $(CLUSTER_OBJS)
 	$(CXX) $(LDFLAGS) $(LIBS) $(CXXFLAGS) -o $@ $(CLUSTER_OBJS)
