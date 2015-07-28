@@ -28,16 +28,23 @@ int main()
   string file_to_load;
   cin >> file_to_load;
 
+  cout << "Please choose a list of frequent LBAs" << endl; 
+  string freqLBASeq; 
+  cin >> freqLBASeq; 
+
   // Creates a fstream object tracefile which holds the contents of the
   // trace file input by the user.
   ifstream tracefile(file_to_load);
 
+  ifstream LBAFile(freqLBASeq); 
+
   // Returns an error message if the tracefile does not exist otherwise loads
   // the fstream tracefile into a TraceFile object.
   if(!tracefile) {
-
-    cout << file_to_load << " does not seem to be exist. " << endl;
-
+    cout << file_to_load << " does not seem to exist. " << endl;
+  }
+  if (!freqLBASeq){
+    cout << freqLBASeq << " does not seem to exist." << endl; 
   }
 
   else {
@@ -47,6 +54,12 @@ int main()
 
     // Reads in the user input file.
     trace.readIn(tracefile);
+
+    std::cout << "total initial seek distance is: " << trace.total_seek_distance(); 
+
+    size_t hotPartition = (trace.get_mapLBA()).size(); 
+
+    trace.change_locations(trace.readLBAs(LBAFile), )
   }
 
   return 0;
