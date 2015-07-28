@@ -27,6 +27,8 @@
 */
 
 
+using namespace std; 
+
 #ifndef CLUSTERPARSE_HPP_INCLUDED
 #define CLUSTERPARSE_HPP_INCLUDED 1
 
