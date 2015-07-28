@@ -2,7 +2,6 @@
  *  traceloader.cpp
  *
  *  Author: Jazmin Ortiz
- *  Last Modified: June 22, 2015
  *
  *  This file contains the main function that will be used to load traces
  *  and create a TraceSet object that will be used to compare different
@@ -28,40 +27,46 @@ int main()
   string file_to_load;
   cin >> file_to_load;
 
-  //Reads in the name of a list of hot LBAs and puts it into string
-  //    freqLBASeq. 
-  cout << "Please choose a list of frequent LBAs" << endl; 
-  string freqLBASeq; 
-  cin >> freqLBASeq; 
+  // Reads in the name of a list of hot LBAs and puts it into string
+  // freqLBASeq.
+  cout << "Please choose a list of frequent LBAs" << endl;
+  string freqLBASeq;
+  cin >> freqLBASeq;
 
   // Creates fstream objects which hold the contents of the
   // files input by the user.
   ifstream tracefile(file_to_load);
 
-  ifstream LBAFile(freqLBASeq); 
+  ifstream LBAFile(freqLBASeq);
 
   // Returns an error message if one of the files does not exist.
   if(!tracefile) {
     cout << file_to_load << " does not seem to exist. " << endl;
   }
   if (!LBAFile){
-    cout << freqLBASeq << " does not seem to exist." << endl; 
+    cout << freqLBASeq << " does not seem to exist." << endl;
   }
 
   else {
-    //Otherwise, loads the files into the traceset.  
+    //Otherwise, loads the files into the traceset.
 
     // Creates a TraceSet object
     TraceSet trace;
 
     trace.readIn(tracefile);
-    size_t diskSize = (trace.get_mapLBA()).size(); 
 
-    cout << "total initial seek distance is: " << trace.total_seek_distance() << endl; 
+    size_t diskSize = (trace.get_mapLBA()).size();
 
-    trace.change_locations(trace.readLBAs(LBAFile), diskSize / 2); 
+    cout << "got below mapLBA size" << endl;
 
-    cout << "total final seek distance is: " << trace.total_seek_distance() << endl; 
+    cout << "total initial seek distance is: " ;
+    cout << trace.total_seek_distance() << endl;
+
+    trace.change_locations(trace.readLBAs(LBAFile), diskSize / 2);
+
+    cout << "total final seek distance is: " ;
+    cout << trace.total_seek_distance() << endl;
+
   }
 
   return 0;
