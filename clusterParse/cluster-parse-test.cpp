@@ -34,6 +34,14 @@ ClusterParse fileTestTree(){
     test.readIn(testFile, true); 
     return test; 
 }
+
+ClusterParse fileTestTree2(){
+    ClusterParse test; 
+    string filename = "test3"; 
+    ifstream testFile(filename);
+    test.readIn(testFile, true);
+    return test; 
+}
 /* Makes and returns a stick with 3 elements. */ 
 ClusterParse smallStickTree(){
     ClusterParse test; 
@@ -173,18 +181,10 @@ TEST(formatOutput, smallStick){
     }
 }
 
-TEST(formatOutput, fulllTree){
+TEST(formatOutput, fullTree){
     ClusterParse test = fileTestTree(); 
-    std::vector<size_t> testVector; 
-    std::vector<size_t> result = test.formatOutput(testVector); 
-    test.printTree(cout); 
-
-    std::cout << "formatOutput result is: " << std::endl; 
-    for (size_t i = 0; i < result.size(); ++ i){
-        cout << result[i] << ", ";
-    }
-
-    cout << endl; 
+    vector<size_t> testVector; 
+    vector<size_t> result = test.formatOutput(testVector); 
 
     assert(result[0] == 6);
     assert(result[1] == 1);
@@ -198,6 +198,25 @@ TEST(formatOutput, fulllTree){
     assert(result[9] == 9); 
 }
 
+TEST(formatOutput, fullTree2){
+    ClusterParse test = fileTestTree2();
+    vector<size_t> testVector; 
+    vector<size_t> result = test.formatOutput(testVector); 
+
+
+    assert(result[0] == 0);
+    assert(result[1] == 1);
+    assert(result[2] == 5);
+    assert(result[3] == 4);
+    assert(result[4] == 6);
+    assert(result[5] == 2);
+    assert(result[6] == 10);
+    assert(result[7] == 3);
+    assert(result[8] == 9);
+    assert(result[9] == 7);
+    assert(result[10] == 8);
+
+}
 
 TEST(formatOutput, largeStick){
     ClusterParse test = largeStickTree(); 
