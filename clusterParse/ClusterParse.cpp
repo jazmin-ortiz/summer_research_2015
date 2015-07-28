@@ -34,7 +34,7 @@ ClusterParse::~ClusterParse(){
 void ClusterParse::setChild(size_t child, size_t parent){
 
     if (numNodes_ > parent){
-        std::cout << "Error: parent node does not exist." << std::endl; 
+        cout << "Error: parent node does not exist." << endl; 
     }
     //If there is no left child...
     if (leftChild(parent) == false){
@@ -49,10 +49,10 @@ void ClusterParse::setChild(size_t child, size_t parent){
         }
         else {
             //Otherwise, throw an error.
-            std::cout << "Error:  Input tree is not a binary Tree; " <<
-            "too many child nodes" << std::endl;
-            std::cout << "Existing Children of node " << parent << "are " << 
-            getRightChild(parent) << " & " << getLeftChild(parent) << std::endl; 
+            cout << "Error:  Input tree is not a binary Tree; " <<
+            "too many child nodes" << endl;
+            cout << "Existing Children of node " << parent << "are " << 
+            getRightChild(parent) << " & " << getLeftChild(parent) << endl; 
         }
     }
 }
@@ -64,7 +64,7 @@ void ClusterParse::setChild(size_t child, size_t parent){
  *     Problems; do not do that. */
 size_t ClusterParse::getLeftChild(size_t parent){
     if (parent > numNodes_){
-        std::cout << "Error:  Parent node does not exist. " << std::endl; 
+        cout << "Error:  Parent node does not exist. " << endl; 
     }
     return clusterTree_[parent].left_;
 }
@@ -76,7 +76,7 @@ size_t ClusterParse::getLeftChild(size_t parent){
  *     Problems; do not do that. */
 size_t ClusterParse::getRightChild(size_t parent){
     if (parent > numNodes_){
-        std::cout << "Error:  Parent node does not exist. " << std::endl; 
+        cout << "Error:  Parent node does not exist. " << endl; 
     }
     return clusterTree_[parent].right_;
 }
@@ -128,8 +128,8 @@ bool ClusterParse::rightChild(size_t parent){
 /* Checks to see if the node "parent" has child node "child" */ 
 bool ClusterParse::isChild(size_t child, size_t parent){
     if (parent > numNodes_){
-        std::cout << "Error:  Invalid node index, greater than" <<
-                     "size of tree. " << std::endl; 
+        cout << "Error:  Invalid node index, greater than" <<
+                     "size of tree. " << endl; 
         return false; 
     }
     if (leftChild(parent) == true && getLeftChild(parent) == child)
@@ -148,7 +148,7 @@ bool ClusterParse::isChild(size_t child, size_t parent){
 size_t ClusterParse::getParent(size_t child){
     size_t parent = clusterTree_[child].parent_;
     if (child > numNodes_){
-        std::cout << "child has not been added to the tree." << std::endl; 
+        cout << "child has not been added to the tree." << endl; 
         return 0; 
     }
     return parent;
@@ -163,9 +163,9 @@ void ClusterParse::setParent(size_t child, size_t parent){
     //If the child has already been set to a different parent previously, then we have
     // a problem in our parsing of the tree.
     if (getParent(child) != parent && getParent(child) != 0){
-        std::cout << "The parent has already been set to another value" << std::endl;
-        std::cout << "The previous parent was: " << getParent(child) << std::endl;
-        std::cout << "The new parent is: " << parent << std::endl;
+        cout << "The parent has already been set to another value" << endl;
+        cout << "The previous parent was: " << getParent(child) << endl;
+        cout << "The new parent is: " << parent << endl;
     }
     else{
         //Otherwise, we can just set the parent.
@@ -191,7 +191,7 @@ size_t ClusterParse::getRoot(){
  *     NOTE:  Should check for a valid parent value before it is added. */
 void ClusterParse::insert(size_t child, size_t parent){ 
     numNodes_ += 1;
-    std::cout.flush(); 
+    cout.flush(); 
 
     //First, we check and see if the vector is large enough.
     size_t vectorSize = clusterTree_.size();
@@ -217,7 +217,7 @@ void ClusterParse::insert(size_t child, size_t parent){
 /* A wrapper function for printNode.  This function prints out the nodes of the tree
  *     in a reasonable order (the order that they are stored in the internal data
  *     structure. */
-std::ostream& ClusterParse::printTree(std::ostream& out){
+ostream& ClusterParse::printTree(ostream& out){
     /* Most of the work for this function is done in printNode, recursively.
     * This is just a wrapper function. */
     printNode(numNodes_ , out);
@@ -231,7 +231,7 @@ std::ostream& ClusterParse::printTree(std::ostream& out){
  *     any nodes passed to it.  It is worth noting that for our purposes, we
  *     do not need to print out the internal structure of the tree, only the
  *     leaves. */
-std::ostream&ClusterParse::printNode(size_t node, std::ostream& out){
+ostream&ClusterParse::printNode(size_t node, ostream& out){
     bool left = leftChild(node);
     bool right = rightChild(node);
     if (left == false && right == false){
@@ -267,12 +267,12 @@ std::ostream&ClusterParse::printNode(size_t node, std::ostream& out){
 /* A function created for use in debugging; prints out the
  *     data members of a node index passed to it. */
 void ClusterParse::printChildren(size_t parent){
-    std::cout << "###PARENT IS " << parent << "###" << std::endl;
-    std::cout << "leftChild_ is " << clusterTree_[parent].leftChild_ <<
+    cout << "###PARENT IS " << parent << "###" << endl;
+    cout << "leftChild_ is " << clusterTree_[parent].leftChild_ <<
                  "\n Left Child is " << clusterTree_[parent].left_ <<
                  "\n rightChild_ is " << clusterTree_[parent].rightChild_ <<
                  "\n Right Child is " << clusterTree_[parent].right_ <<
-                 "\n Parent is " << clusterTree_[parent].parent_ << std::endl;
+                 "\n Parent is " << clusterTree_[parent].parent_ << endl;
 }
 
 /* */
@@ -328,13 +328,13 @@ void ClusterParse::readIn(ifstream& inputstream, bool test)
     inputstream.close();
 }
 
-std::vector<size_t> ClusterParse::formatOutput(){
-    std::vector<size_t>* leafList = new std::vector<size_t>; 
+vector<size_t> ClusterParse::formatOutput(){
+    vector<size_t>* leafList = new vector<size_t>; 
     traverseTree(numNodes_ , leafList); 
     return *leafList;  
 }
 
-void ClusterParse::traverseTree(size_t node, std::vector<size_t>* leafList){
+void ClusterParse::traverseTree(size_t node, vector<size_t>* leafList){
     bool left = leftChild(node);
     bool right = rightChild(node);
     if (left == false && right == false){
