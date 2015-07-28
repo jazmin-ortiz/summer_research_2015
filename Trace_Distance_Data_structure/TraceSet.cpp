@@ -123,7 +123,7 @@ void TraceSet::insert(string LBA_to_add)
   size_t index_of_line = Sequence_.size() - 1;
   if (added_LBA >= mapLBA_.size()) {
 
-    mapLBA_.resize(2*added_LBA);
+    mapLBA_.resize(2*added_LBA); 
     locations_.resize(2*added_LBA);
 
   }
@@ -185,6 +185,7 @@ void TraceSet::readIn(ifstream& inputstream)
   //read in as string from stdin
   char c;
   string current_LBA = "";
+
   while (inputstream.get(c)) {
 
     // Makes sure that streamn closes if eof char is seen
@@ -201,6 +202,7 @@ void TraceSet::readIn(ifstream& inputstream)
       insert(current_LBA);
       current_LBA = "";
 
+
     }
 
     // If a newline char has not been seen continues to push chars onto
@@ -213,15 +215,14 @@ void TraceSet::readIn(ifstream& inputstream)
 
   }
 
-  //  inputstream.close();
 }
 
 /**
  * function: readLBAs(ifstream& inputstream)
  *
- * Reads in from standard in a list of numbers (one per line) 
- *     and returns a vector of those size_ts in the order that 
- *     that they were seen.
+ * Reads in from standard in a list of numbers (one per line)
+ * and returns a vector of those size_ts in the order that
+ * that they were seen.
  */
 
 std::vector<size_t> TraceSet::readLBAs(ifstream& inputstream)
@@ -230,12 +231,12 @@ std::vector<size_t> TraceSet::readLBAs(ifstream& inputstream)
 
     char c;
     string current_LBA = "";
-    std::vector<size_t> freqLBAs; 
+    std::vector<size_t> freqLBAs;
 
     while (inputstream.get(c)) {
     // Makes sure that streamn closes if eof char is seen
         if (inputstream.eof()){
-            inputstream.close(); 
+            inputstream.close();
             return freqLBAs;
         }
         // Checks if a newline has been encountered which means that the
@@ -251,8 +252,8 @@ std::vector<size_t> TraceSet::readLBAs(ifstream& inputstream)
             current_LBA.push_back(c);
         }
     }
-    inputstream.close();
-    return freqLBAs; 
+
+    return freqLBAs;
 
 }
 
