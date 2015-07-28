@@ -334,7 +334,9 @@ TEST(formatfunctions, small)
     test.insert(2, 4);
     test.insert(4, 5);
 
-    vector<size_t> vector1 = test.formatOutput();
+    vector<size_t> mappingVector; 
+
+    vector<size_t> vector1 = test.formatOutput(mappingVector);
     vector<size_t> vector2 = test.formatOutputVector();
 
     cout << "Bat Elizabeth" <<endl;
