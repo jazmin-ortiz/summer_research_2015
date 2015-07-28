@@ -173,6 +173,31 @@ TEST(formatOutput, smallStick){
     }
 }
 
+TEST(formatOutput, fulllTree){
+    ClusterParse test = fileTestTree(); 
+    std::vector<size_t> testVector; 
+    std::vector<size_t> result = test.formatOutput(testVector); 
+    test.printTree(cout); 
+
+    std::cout << "formatOutput result is: " << std::endl; 
+    for (size_t i = 0; i < result.size(); ++ i){
+        cout << result[i] << ", ";
+    }
+
+    cout << endl; 
+
+    assert(result[0] == 6);
+    assert(result[1] == 1);
+    assert(result[2] == 5);
+    assert(result[3] == 3);
+    assert(result[4] == 7);
+    assert(result[5] == 2);
+    assert(result[6] == 0);
+    assert(result[7] == 4);
+    assert(result[8] == 8);
+    assert(result[9] == 9); 
+}
+
 
 TEST(formatOutput, largeStick){
     ClusterParse test = largeStickTree(); 
