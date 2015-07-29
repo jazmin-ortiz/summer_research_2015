@@ -55,16 +55,12 @@ int main()
 
     trace.readIn(tracefile);
 
-    size_t diskSize = (trace.get_mapLBA()).size();
-
-    cout << "got below mapLBA size" << endl;
-
-    cout << "total initial seek distance is: " ;
+    cout << "Total initial seek distance is: " ;
     cout << trace.total_seek_distance() << endl;
 
-    trace.change_locations(trace.readLBAs(LBAFile), diskSize / 2);
+    trace.change_locations(trace.readLBAs(LBAFile), 0);
 
-    cout << "total final seek distance is: " ;
+    cout << "Total final seek distance is:   " ;
     cout << trace.total_seek_distance() << endl;
 
   }
