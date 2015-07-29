@@ -107,7 +107,7 @@ public:
     size_t LBA;               // A size_t which represents a LBA
 
     bool used = false;        // A bool which represents if the given
-                              // PBA has been used.
+                              // location has been used.
 
   };
 
@@ -121,7 +121,7 @@ public:
   std::vector<LBA_location>& get_locations();
 
   /// Adds a string which defines a LBA address and and adds it to the end
-  /// of the traceSequence vector and updates data members apropriately.
+  /// of the Sequence_ vector and updates data members apropriately.
   void insert(std::string LBA_to_add);
 
   /// Reads in a text file where each line in the text file contains a LBA
@@ -131,23 +131,22 @@ public:
 
   /// Reads in a text file where each line in the text file contains
   /// a frequent LBA, which will be part of the "hot" partition in our
-  /// final disk arrangment.  
-
-  std::vector<size_t> readLBAs(std::ifstream& inputstream); 
+  /// final disk arrangment.
+  std::vector<std::size_t> readLBAs(std::ifstream& inputstream);
 
 
   /// This function takes in a size_t which is an LBA and returns
   /// a vector of size_ts which represent the indices of all
   /// occurences of the given LBA in the TraceSet private data member
   /// Sequence_.
-  std::vector<size_t> get_indices(size_t LBA_to_find);
+  std::vector<std::size_t> get_indices(std::size_t LBA_to_find);
 
   /// This finds and returns the sum of the distances between two adjacent
   /// LBAs in the Sequences vector.
   ///
-  /// This distance between two LBAS is the absolute value
-  /// of the difference of thier respective locations values.
-  size_t total_seek_distance();
+  /// The distance between two LBAS is the absolute value
+  /// of the difference of thier respective location values.
+  std::size_t total_seek_distance();
 
   /// This function takes in a vector of size_ts that are LBAs in the
   /// mapLBA_ vector and a size_t start, where the order of the LBAs in
@@ -157,7 +156,7 @@ public:
   /// This function alters the LBA_locations structs and location associated
   /// with the LBAs in the mapLBA_ and locations_ vectors, so that the locations
   /// of the LBAs in the input vector are consecutive and in the order that they
-  /// appear in the input vector and begin at the size_t start,
+  /// appear in the input vector, and also begin at the size_t called start.
   ///
   /// The locations of the LBAs that are not in the input vector will then be
   /// shifted so that no LBAs have the same location.
@@ -181,20 +180,40 @@ public:
 
 private:
 
-  // Sequence_ is an vector of TraceSet structs. Together it contains
-  // the entirety of the trace, and the index of the next instance of that
-  // LBA in the trace.
+  // Sequence_ is an vector of TraceSet structs, which together contain
+  // the entirety of the trace. The indices of Sequence_ correspond to the order
+  // access.
+  //
+  // The struct at index i contains information concerning the i LBA accessed,
+  // this struct contains:
+  // (1) The LBA which is accessed
+  // (2) The index of the next instance of that LBA in the trace.
+  // (3) A bool which represents if this is the last occurence of that LBA
+  // in the trace.
   std::vector<Line> Sequence_;
 
-  // mapLBA_ is a vector of structs that contain (1) the LBA of everything
-  // in the trace, (2) location a size_t which represents our approxmiation of
-  // the location each LBA maps to, and (3) the index of the first and last
-  // instance of that LBA within the trace. This data member allows for quick
-  // look up and access of location when given a LBA.
+  // mapLBA_ is a vector of structs, each struct contains information pertaining
+  // to a specfic LBA in the trace and the mapLBA_ vector contains a struct for
+  // every LBA contained within the trace. The indices of mapLBA_ correspond to
+  // LBAS so the struct at index i has information about the LBA whose value is
+  // i.
+  //
+  // The struct at index i contains;
+  // (1) A size_t called location which represents our approxmiation of
+  // the location LBA i  maps to.
+  // (2) The index of the first and las instance of LBA i within the trace.
+  //
+  // This data member allows for quick look up and access of locations when
+  //given a LBA.
   std::vector<blockLBA> mapLBA_;
 
   // locations_ is a vector of LBA_location structs, indexed by location,
-  // this data member allows for quick look up of LBAs when given a location.
+  // The struct at index i contains:
+  // (1) The LBA which is currently mapped to this location.
+  // (2) A bool which corresponds to if there is an LBA currently mapped to this
+  // location.
+  //
+  // This data member allows for quick look up of LBAs when given a location.
   std::vector<LBA_location> locations_;
 
 };
