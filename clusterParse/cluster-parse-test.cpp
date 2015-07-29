@@ -48,7 +48,7 @@ ClusterParse cluto1(){
     ClusterParse test; 
     string filename = "cluto1"; 
     ifstream testFile(filename); 
-    test.readIn(testFile, true);
+    test.readIn(testFile, false);
     return test; 
 }
 
