@@ -1,5 +1,5 @@
 /**
- * \file trace-set-test.cpp
+ * \file cluster-parse-test.cpp
  *
  * \Authors Elizabeth Krenkel
  *
