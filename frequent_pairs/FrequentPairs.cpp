@@ -180,7 +180,7 @@ void FrequentPairs::createAsciiMatrix(string matrix_file_to_load)
 
   fstream matrix_file(matrix_file_to_load);
 
-  // The line in the file must be the number of vertices in the graph
+  // The first line in the file must be the number of vertices in the graph
   matrix_file << num_LBAs << endl;
 
   // The next n lines in the file will each contain information about the
@@ -198,6 +198,30 @@ void FrequentPairs::createAsciiMatrix(string matrix_file_to_load)
     matrix_file << endl;
 
   }
+
+}
+/**
+ * function: createMappingFile(string LBA_mapping_file)
+ *
+ * This function takes in a string which is the name of an empty .txt file and
+ * creates and inserts the FrequentLBAs_ vector. Now the ith line in the file
+ * will contain the LBA which is mapped to the ith index in the FrequentLBAs_
+ * vector.
+ */
+void FrequentPairs::createMappingFile(string LBA_mapping_file)
+{
+
+  size_t num_LBAs = FrequentLBAs.size();
+
+  fstream mapping_file(LBA_mapping_file);
+
+  for (size_t i = 0; i < num_LBAs; ++i) {
+
+    mapping_file << FrequentLBAs_[i] << endl;;
+
+    }
+
+  return mapping_file
 
 }
 

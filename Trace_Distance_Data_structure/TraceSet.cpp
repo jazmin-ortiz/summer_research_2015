@@ -211,10 +211,8 @@ void TraceSet::readIn(ifstream& inputstream)
  * and returns a vector of those size_ts in the order that
  * that they were seen.
  */
-
 std::vector<size_t> TraceSet::readLBAs(ifstream& inputstream)
 {
-
 
     char c;
     string current_LBA = "";
@@ -229,18 +227,23 @@ std::vector<size_t> TraceSet::readLBAs(ifstream& inputstream)
             return freqLBAs;
 
         }
+
         // Checks if a newline has been encountered which means that the
         // the current LBA has been completed and if so inserts it into the
         // Sequence_ vector.
         else if ( c == '\n' ) {
+
             freqLBAs.push_back(stoi(current_LBA));
             current_LBA = "";
+
         }
-        // If a newline char has not been seen continues to push chars onto
-        // current_LBA
+
         else {
+
             current_LBA.push_back(c);
+
         }
+
     }
 
     return freqLBAs;
@@ -397,11 +400,11 @@ void TraceSet::change_locations(vector<size_t> LBA_vector, size_t start)
   // the iterator start_location.
   locations_.insert(start_location, LBAs.begin(), LBAs.end());
 
-  // The ordering of the LBAs and the associated LBA_locationss is now correct
+  // The ordering of the LBAs and the associated LBA_locations is now correct
   // in locations_, the helper function fix_locationss() is now run to fix any
   // discrepancies that may have occured in the LBA-location pairs in the
   // mapLBA_ data structure due to the movement of LBA_location structs which
-  // was cause by the need to place the LBAs in LBA_vector in the
+  // was caused by the need to place the LBAs in LBA_vector in the
   // correct locations in the locations_ vector.
 
   fix_locations();

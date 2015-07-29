@@ -85,6 +85,16 @@ public:
    */
   void createAsciiMatrix(std::string matrix_file_to_load);
 
+    /**
+   * function: createMappingFile(string LBA_mapping_file)
+   *
+   * This function takes in a string which is the name of an empty .txt file and
+   * creates and inserts the FrequentLBAs_ vector. Now the ith line in the file
+   * will contain the LBA which is mapped to the ith index in the FrequentLBAs_
+   * vector.
+   */
+  void createMappingFile(std::string LBA_mapping_file);
+
   /**
    * function: fillInFrequentMatrix()
    *
