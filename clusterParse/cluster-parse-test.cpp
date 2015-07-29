@@ -38,7 +38,7 @@ ClusterParse fullTree1(){
 /* Makes a tree to test on from the file test2 */ 
 ClusterParse fullTree2(){
     ClusterParse test; 
-    string filename = "test3"; 
+    string filename = "test2"; 
     ifstream testFile(filename);
     test.readIn(testFile, true);
     return test; 
@@ -85,7 +85,7 @@ vector<size_t> result_fullTree2(){
     result.push_back(3);
     result.push_back(9);
     result.push_back(7);
-    result.push_back(9);
+    result.push_back(8);
     /* And return it for use in other functions. */ 
     return result; 
 }
@@ -261,7 +261,6 @@ TEST(formatOutput, fullTree2){
      *     pass an empty vector as the argument to formatOutput. */  
     vector<size_t> testVector; 
     vector<size_t> result = test.formatOutput(testVector); 
-
     /* We get a vector to check against. */ 
     vector<size_t> checkVector = result_fullTree2();
 
@@ -308,14 +307,17 @@ TEST(formatOutput, balancedTree){
     }
 }
 
-TEST(OutputRemap, fullTree){
+
+/* Checks the remapping capabilities of formatOutput, by remapping 
+ *     to a nonconsecutive set of numbers. */ 
+TEST(OutputRemap, fullTree1){
     ClusterParse test = fullTree1();
 
     /* We create a remapping vector that remaps everything to itself
-     *    multiplied by 13. */  
+     *    multiplied by 13. */ 
     vector<size_t> testVector; 
     for (size_t i = 0; i < 10; ++i){
-        testVector[i] = i * 13; 
+        testVector.push_back(i * 13); 
     }
 
     /* We remap using that output.  */ 
@@ -323,9 +325,31 @@ TEST(OutputRemap, fullTree){
     vector<size_t> checkVector = result_fullTree1(); 
     /*  We check our remapping worked against our result_fullTree1 vector. */
     for (size_t i = 0; i < result.size(); ++i){
-        assert(result[i] == testVector[i] * 13); 
+        assert(result[i] == checkVector[i] * 13); 
     }
 }
+
+/* Checks that remapping works on a nonincreasing set of numbers. */ 
+TEST(OutputRemap, fullTree2){
+    ClusterParse test = fullTree2();
+
+    /* We create a remapping vector that remaps everything to 27 minus
+     *    itself. */ 
+    vector<size_t> testVector; 
+    for (size_t i = 0; i < 11; ++i){
+        testVector.push_back(27 - i); 
+    }
+
+    /* We remap using that output.  */ 
+    vector<size_t> result = test.formatOutput(testVector);
+    vector<size_t> checkVector = result_fullTree2(); 
+
+    /*  We check our remapping worked against our result_fullTree2 vector. */
+    for (size_t i = 0; i < result.size(); ++i){
+        assert(result[i] == 27 - checkVector[i]); 
+    }
+}
+
 
 
 /* Tests getParent on a small tree which we create within the function. */
