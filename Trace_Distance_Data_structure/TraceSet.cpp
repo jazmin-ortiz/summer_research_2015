@@ -32,7 +32,7 @@ TraceSet::TraceSet():
   mapLBA_{1},
   locations_{1}
 {
-  // Do nothing here`
+  // Do nothing here
 }
 
 // Destructor for the TraceSet
@@ -102,19 +102,17 @@ vector<TraceSet::LBA_location>& TraceSet::get_locations()
   */
 void TraceSet::insert(string LBA_to_add)
 {
-  // size_t version of the LBA
+
   size_t added_LBA = stoi(LBA_to_add);
 
-  // Initializes the traceLine object.
   Line Line_to_add;
   Line_to_add.LBA = added_LBA;
 
-  // Adds object to Sequence_ vector
   Sequence_.push_back(Line_to_add);
 
   // Make sure that the LBA is in the mapLBA_vector and if it isnt
   // resizes the mapLBA_ vector apropriately. Since the locations_ vector
-  // contains the same information as the mapLBA vector but is instead
+  // contains the same information as the mapLBA_ vector but is instead
   // indexed by location, if the mapLBA_ vector needs to be resized then the
   // locations_ vector will also need to be resized
   //
@@ -123,7 +121,7 @@ void TraceSet::insert(string LBA_to_add)
   size_t index_of_line = Sequence_.size() - 1;
   if (added_LBA >= mapLBA_.size()) {
 
-    mapLBA_.resize(2*added_LBA); 
+    mapLBA_.resize(2*added_LBA);
     locations_.resize(2*added_LBA);
 
   }
@@ -131,9 +129,6 @@ void TraceSet::insert(string LBA_to_add)
   // Variable representing the blockLBA which contains information
   // about LBA_to_add
   blockLBA& LBAs_blockLBA = mapLBA_[added_LBA];
-
-  // Set of if statments to properly update the LBA's block map struct in the
-  // mapLBA_ vector.
 
   // Deals with the cases where there is at least one instance of the given
   // LBA in the Sequence_ vector.
@@ -143,7 +138,6 @@ void TraceSet::insert(string LBA_to_add)
      // called last now is the index of the second to last
      size_t second_to_last = LBAs_blockLBA.last;
 
-     // Update the previously last instance of LBA_to_add in Sequence_
      Sequence_[second_to_last].next = index_of_line;
 
   }
@@ -153,13 +147,10 @@ void TraceSet::insert(string LBA_to_add)
    // mapLBA_ and locations_ vector.
    else {
 
-     // Sets the data members of LBAs_blockLBA apropriately.
      LBAs_blockLBA.first = index_of_line;
      LBAs_blockLBA.location = added_LBA;
      LBAs_blockLBA.used = true;
 
-     // Sets the data members of the LBA_location struct which represents the
-     // given LBA apropriately.
      locations_[added_LBA].LBA = added_LBA;
      locations_[added_LBA].used = true;
 
@@ -179,10 +170,6 @@ void TraceSet::insert(string LBA_to_add)
 void TraceSet::readIn(ifstream& inputstream)
 {
 
-  // While loop to read in a text file from stdin.
-  //
-  // The most recently read character and variable to hold the LBAs that are
-  //read in as string from stdin
   char c;
   string current_LBA = "";
 
@@ -234,10 +221,13 @@ std::vector<size_t> TraceSet::readLBAs(ifstream& inputstream)
     std::vector<size_t> freqLBAs;
 
     while (inputstream.get(c)) {
-    // Makes sure that streamn closes if eof char is seen
+
+    // Makes sure that stream closes if eof char is seen
         if (inputstream.eof()){
+
             inputstream.close();
             return freqLBAs;
+
         }
         // Checks if a newline has been encountered which means that the
         // the current LBA has been completed and if so inserts it into the
