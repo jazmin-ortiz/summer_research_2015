@@ -302,9 +302,8 @@ vector<size_t> TraceSet::get_indices(size_t LBA_to_find)
       next_line = Sequence_[index];
 
     }
-}
 
-  else {
+  } else {
 
     // Do nothing
 
@@ -354,16 +353,17 @@ size_t TraceSet::total_seek_distance()
 
     else {
 
-      total_distance += current_location - next_location;
+        total_distance += current_location - next_location;
 
     }
 
-    ++current_it;
-    ++next_it;
-
   }
 
+  ++current_it;
+  ++next_it;
+
   return total_distance;
+
 }
 
 /**
@@ -428,7 +428,7 @@ void TraceSet::change_locations(vector<size_t> LBA_vector, size_t start)
  *
  */
 void TraceSet::remove_LBA_locations(vector<size_t> LBA_vector)
- {
+{
 
   // loops through LBA_vector, finds the location associated with each LBA and
   // then inserts the LBA and its associated location as a key-value pair into
@@ -476,6 +476,7 @@ void TraceSet::remove_LBA_locations(vector<size_t> LBA_vector)
       locations_[i - num_positions] = current_location;
 
     }
+
   }
 
   // Now that LBA_location in locations_ have been shifted up apropriately, we
