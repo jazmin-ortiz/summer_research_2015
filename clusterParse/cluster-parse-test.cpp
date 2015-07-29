@@ -318,9 +318,9 @@ TEST(formatOutput, balancedTree){
 TEST(formatOutput, cluto1){
     ClusterParse test = cluto1(); 
     vector<size_t> emptyVector1;
-    vector<size_t>& emptyVector2; 
-    vector<size_t> vector1 = test.formatOutput(emptyVector); 
-    vector<size_t>& vector2 = getLeaves(emptyVector2, test.getRoot());
+    vector<size_t> emptyVector2; 
+    vector<size_t> vector1 = test.formatOutput(emptyVector1); 
+    vector<size_t>& vector2 = test.getLeaves(emptyVector2, test.getRoot());
 
     assert(vector1.size() == vector1.size()); 
 
