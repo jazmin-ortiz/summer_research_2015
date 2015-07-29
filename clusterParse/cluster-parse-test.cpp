@@ -44,6 +44,14 @@ ClusterParse fullTree2(){
     return test; 
 }
 
+ClusterParse cluto1(){
+    ClusterParse test; 
+    string filename = "cluto1"; 
+    ifstream testFile(filename); 
+    test.readIn(testFile, true);
+    return test; 
+}
+
 /* Returns a vector of the leaves of the tree from 
  *     test1 file, in the order that they should appear 
  *     in the tree from left to right. */ 
@@ -304,6 +312,20 @@ TEST(formatOutput, balancedTree){
     assert(result.size() == 8); 
     for (size_t i = 0; i < result.size(); ++i){
         assert(result[i] == i); 
+    }
+}
+
+TEST(formatOutput, cluto1){
+    ClusterParse test = cluto1(); 
+    vector<size_t> emptyVector1;
+    vector<size_t> emptyVector2; 
+    vector<size_t> vector1 = test.formatOutput(emptyVector1); 
+    vector<size_t>& vector2 = test.getLeaves(emptyVector2, test.getRoot());
+
+    assert(vector1.size() == vector1.size()); 
+
+    for (size_t i = 0; i < vector1.size(); ++i){
+        assert(vector1[i] == vector2[i]); 
     }
 }
 
