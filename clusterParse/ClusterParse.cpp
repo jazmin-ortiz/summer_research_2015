@@ -400,51 +400,36 @@ std::fstream ClusterParse::makeTreeFile()
 
 }
 
-std::vector<std::size_t> ClusterParse::formatOutputVector()
+/*
+ * Returns a vector of size_ts which represent the leaves in the tree in the
+ * order that they appear in the tree.
+ */
+vector<size_t>& ClusterParse::getLeaves(vector<size_t>& leaves, size_t here)
 {
-  // This will be set to be the value of the first node which is not a leaf
-  std::size_t firstNonLeaf = 0;
 
-  Node node = clusterTree_[0];
-  std::size_t node_index = 0;
+  Node current = clusterTree_[here];
 
-  // While loop to find index of first node which is not a leaf
-  while (node.leftChild_ == false && node.rightChild_ == false) {
+  if (current.leftChild_) {
 
-    ++node_index;
-    node = clusterTree_[node_index];
-
-    ++firstNonLeaf;
-  }
-  std::cout << "first nonleaf is : " << firstNonLeaf << std::endl;
-  std::vector<std::size_t> output;
-  std::size_t nodes_index = firstNonLeaf;
-  node = clusterTree_[nodes_index];
-  // Loop through and insert the leaves in the order they appear in the tree.
-  // The first thing to check is that the node we are considering has at least
-  // 1 child.
-  while (node.leftChild_ || node.rightChild_) {
-
-    // If one of the children of the node is larger than the first_non_leaf then
-    // we know that the current node's children are not leaves and we have
-    // therefore checked and inserted all of the leaves and should therefore
-    // break out of the loop
-    if (node.leftChild_ >= firstNonLeaf || node.rightChild_ >= firstNonLeaf){
-
-      break;
-
-    } else {
-
-      output.push_back(node.leftChild_);
-      output.push_back(node.rightChild_);
-
-      ++nodes_index;
-      node = clusterTree_[nodes_index];
-
-    }
+    getLeaves(leaves, getLeftChild(here));
 
   }
 
-  return output;
+  if (current.rightChild_) {
+
+    getLeaves(leaves, getRightChild(here));
+
+
+  }
+
+  // make sure that the current node is actually a leaf
+  else if(current.leftChild_ == 0 && current.rightChild_ == 0) {
+
+    leaves.push_back(here);
+
+  }
+
+  return leaves;
 
 }
+

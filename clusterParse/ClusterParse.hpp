@@ -129,7 +129,7 @@ public:
     * A function that returns a vector of size_ts that represent the leaf nodes
     *      of the tree and thier order in the tree which is defined by thier
     *      parent. */
-  std::vector<std::size_t> formatOutputVector();
+  std::vector<std::size_t>& getLeaves(std::vector<std::size_t>& leaves, std::size_t here);
 
 private:
 

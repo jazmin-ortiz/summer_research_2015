@@ -474,16 +474,13 @@ TEST(formatfunctions, small)
     test.insert(2, 4);
     test.insert(4, 5);
 
-    vector<size_t> mappingVector; 
+    vector<size_t> mappingVector;
+    vector<size_t> leaves;
+
+    size_t root = test.getRoot();
 
     vector<size_t> vector1 = test.formatOutput(mappingVector);
-    vector<size_t> vector2 = test.formatOutputVector();
-
-    cout << "Bat Elizabeth" <<endl;
-    cout << vector1.size() <<endl;
-
-    cout << "Jazmin" <<endl;
-    cout << vector2.size() <<endl;
+    vector<size_t> vector2 = test.getLeaves(leaves, root);
 
     assert(vector1.size() == vector2.size());
 
