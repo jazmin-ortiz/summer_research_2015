@@ -27,7 +27,7 @@ using namespace std;
 
 
 /* Makes a tree from the file test1. */ 
-ClusterParse fileTestTree(){
+ClusterParse fullTree1(){
     ClusterParse test;
     string filename = "test1";
     ifstream testFile(filename);
@@ -35,13 +35,61 @@ ClusterParse fileTestTree(){
     return test; 
 }
 
-ClusterParse fileTestTree2(){
+/* Makes a tree to test on from the file test2 */ 
+ClusterParse fullTree2(){
     ClusterParse test; 
     string filename = "test3"; 
     ifstream testFile(filename);
     test.readIn(testFile, true);
     return test; 
 }
+
+/* Returns a vector of the leaves of the tree from 
+ *     test1 file, in the order that they should appear 
+ *     in the tree from left to right. */ 
+vector<size_t> result_fullTree1(){
+    /* We create a vector...*/ 
+    vector<size_t> resultVector; 
+    /* Fill it with what the contents of
+     *     formatOutput should be for test1...*/
+    resultVector.push_back(6);
+    resultVector.push_back(1);
+    resultVector.push_back(5);
+    resultVector.push_back(3);
+    resultVector.push_back(7);
+    resultVector.push_back(2);
+    resultVector.push_back(0);
+    resultVector.push_back(4);
+    resultVector.push_back(8);
+    resultVector.push_back(9);
+
+    /* And return it for use in other functions. */ 
+    return resultVector; 
+}
+
+/* Returns a vector of the leaves of the tree from 
+ *     test2 file, in the order that they should appear 
+ *     in the tree from left to right. */ 
+vector<size_t> result_fullTree2(){
+    /* We create a vector...*/ 
+    vector<size_t> result; 
+    /* Fill it with what the contents of
+     *     formatOutput should be for test2...*/
+    result.push_back(0);
+    result.push_back(1);
+    result.push_back(5); 
+    result.push_back(4);
+    result.push_back(6);
+    result.push_back(2);
+    result.push_back(10);
+    result.push_back(3);
+    result.push_back(9);
+    result.push_back(7);
+    result.push_back(9);
+    /* And return it for use in other functions. */ 
+    return result; 
+}
+
 /* Makes and returns a stick with 3 elements. */ 
 ClusterParse smallStickTree(){
     ClusterParse test; 
@@ -98,9 +146,10 @@ TEST(getHeight, smallStick){
 /* Tests the getHeight function for a tree 
  *     read in from a testfile. Implicitly 
  *     also tests readIn. */ 
-TEST(getHeight, fullTree){
-    ClusterParse test = fileTestTree(); 
-
+TEST(getHeight, fullTree1){
+    ClusterParse test = fullTree1(); 
+    /*  These results are determined by prior knowledges
+     *      of the graph. */ 
     assert(test.getHeight(0) == 0); 
     assert(test.getHeight(1) == 0);
     assert(test.getHeight(11) == 1);
@@ -144,7 +193,7 @@ TEST(getParent, balencedTree){
 /*Tests getRoot for a balanced tree. 
  *    implicitly tests insert and the associated helper
  *    functions. */ 
-TEST(getRoot, balencedTree){
+TEST(getRoot, balancedTree){
     ClusterParse test = balancedTree(); 
     assert(test.getRoot() == 14); 
 }
@@ -164,87 +213,125 @@ TEST(getRoot, largeStick){
  *     implicitly tests readIn and insert, as well as
  *     setParent and setChild */ 
 TEST(getRoot, fullTree){
-    ClusterParse test = fileTestTree(); 
+    ClusterParse test = fullTree1(); 
     assert(test.getRoot() == 18); 
 }
 
-/* Checks the properties of the vector from formatOutput for small
- *     trees. */ 
+/* Checks that FormatOutput works for a small stick with a single leaf. */ 
 TEST(formatOutput, smallStick){
     ClusterParse test = smallStickTree(); 
     vector<size_t> testVector; 
     std::vector<size_t> result = test.formatOutput(testVector);
-
+    
+    /* We check that the output of FormatOutput for a stick with a 
+     *     single leaf is the single number that we expect. */  
     assert(result.size() == 1); 
-    for (size_t i = 0; i < result.size(); ++i){
-        assert(result[i] == i); 
+    assert(result[0] == 0); 
+}
+
+/* Checks that formatOutput works for a a tree made from the file test1. 
+ *     with no remapping. */
+TEST(formatOutput, fullTree){
+    ClusterParse test = fullTree1();
+    /* We are not interested in checking remapping at this point, so we 
+     *     pass an empty vector as the argument to formatOutput. */  
+    vector<size_t> testVector; 
+    vector<size_t> result = test.formatOutput(testVector); 
+
+    /* We get a vector to check against. */ 
+    vector<size_t> checkVector = result_fullTree1();
+
+    /* We perform a preliminary check to make sure our vectors are the
+     *     same size... */ 
+    assert(checkVector.size() == result.size()); 
+
+    /* Then we check that every element in our result and the expected
+     *     result are the same. */ 
+    for (size_t i = 0; i < checkVector.size(); ++i){
+        assert(result[i] == checkVector[i]); 
     }
 }
 
-TEST(formatOutput, fullTree){
-    ClusterParse test = fileTestTree(); 
-    vector<size_t> testVector; 
-    vector<size_t> result = test.formatOutput(testVector); 
 
-    assert(result[0] == 6);
-    assert(result[1] == 1);
-    assert(result[2] == 5);
-    assert(result[3] == 3);
-    assert(result[4] == 7);
-    assert(result[5] == 2);
-    assert(result[6] == 0);
-    assert(result[7] == 4);
-    assert(result[8] == 8);
-    assert(result[9] == 9); 
-}
-
+/* Checks that formatOutput works for a a tree made from the file test2
+ *    with no remapping. */
 TEST(formatOutput, fullTree2){
-    ClusterParse test = fileTestTree2();
+        ClusterParse test = fileTestTree2();
+    /* We are not interested in checking remapping at this point, so we 
+     *     pass an empty vector as the argument to formatOutput. */  
     vector<size_t> testVector; 
     vector<size_t> result = test.formatOutput(testVector); 
 
+    /* We get a vector to check against. */ 
+    vector<size_t> checkVector = result_fullTree2()
 
-    assert(result[0] == 0);
-    assert(result[1] == 1);
-    assert(result[2] == 5);
-    assert(result[3] == 4);
-    assert(result[4] == 6);
-    assert(result[5] == 2);
-    assert(result[6] == 10);
-    assert(result[7] == 3);
-    assert(result[8] == 9);
-    assert(result[9] == 7);
-    assert(result[10] == 8);
+    /* We perform a preliminary check to make sure our vectors are the
+     *     same size... */ 
+    assert(checkVector.size() == result.size()); 
 
+    /* Then we check that every element in our result and the expected
+     *     result are the same. */ 
+    for (size_t i = 0; i < checkVector.size(); ++i){
+        assert(result[i] == checkVector[i]); 
+    }
 }
 
+
+/* Check that formatOutput works on the edge case of a large 
+ *     (500 node) stick without remapping.*/ 
 TEST(formatOutput, largeStick){
     ClusterParse test = largeStickTree(); 
+
+    /* Because we don't want to remap anything, we pass an empty
+     *     vector. */ 
     vector<size_t> testVector; 
     std::vector<size_t> result = test.formatOutput(testVector); 
 
     assert(result.size() == 1); 
-    for (size_t i = 0; i < result.size(); ++i){
-        assert(result[i] == i); 
-    }
+    assert(result[0] == 0); 
 }
-/* Checks the properties of the vector from formatOutput for 
+
+/* Checks the result of formatOutput for 
  *     a larger, balanced tree. */ 
 TEST(formatOutput, balancedTree){
     ClusterParse test = balancedTree(); 
+    /* Again, we don't want to remap anything, so we pass
+     *     an empty vector. */ 
     vector<size_t> testVector; 
     std::vector<size_t> result = test.formatOutput(testVector);
 
+    /* Because of the way we constructed our balanced tree, 
+     *     the leaves should come out consecutively.  */ 
     assert(result.size() == 8); 
     for (size_t i = 0; i < result.size(); ++i){
         assert(result[i] == i); 
     }
 }
 
+TEST(OutputRemap, fullTree){
+    ClusterParse test = fullTree1();
 
-/// Test insert when taking in only the same character
+    /* We create a remapping vector that remaps everything to itself
+     *    multiplied by 13. */  
+    vector<size_t testVector; 
+    for (size_t i = 0; i < 10; ++i){
+        testVector[i] = i * 13; 
+    }
+
+    /* We remap using that output.  */ 
+    result = test.formatOutput(testVector);
+    vector<size_t> checkVector = result_fullTree1(); 
+    /*  We check our remapping worked against our result_fullTree1 vector. */
+    for (size_t i = 0; i < result.size(); ++i){
+        assert(result[i] == testVector[i] * 13); 
+    }
+}
+
+
+/* Tests getParent on a small tree which we create within the function. */
 TEST(getParent, smallTree)
 {
+    /* We create the tree to test on... */ 
     ClusterParse test; 
     test.insert(0, 2);
     test.insert(1, 2); 
@@ -252,7 +339,7 @@ TEST(getParent, smallTree)
     test.insert(3, 4);
     test.insert(4, 5); 
 
-    //Test that getParent works on a small tree... 
+    /* And test getParent on it. */ 
     assert(test.getParent(0) == 2);
     assert(test.getParent(1) == 2);
     assert(test.getParent(2) == 5); 
@@ -260,9 +347,12 @@ TEST(getParent, smallTree)
     assert(test.getParent(4) == 5); 
 }
 
-/// Test insert when taking in only the same character
-TEST(getChild, smallTree)
+
+/* Test getRightChild and getLeftChild functions on a 
+ *     small tree that we create within the function. */ 
+TEST(getChildren, smallTree)
 {
+    /* We create our small tree to test on. */ 
     ClusterParse test; 
     test.insert(0, 2);
     test.insert(1, 2); 
@@ -270,7 +360,7 @@ TEST(getChild, smallTree)
     test.insert(3, 4);
     test.insert(4, 5); 
 
-    //Test that getParent works on a small tree... 
+    /* Test that the getChildren works on a small tree...  */ 
     assert(test.getLeftChild(2) == 0);
     assert(test.getRightChild(2) == 1);
     assert(test.getLeftChild(4) == 3); 
@@ -279,9 +369,11 @@ TEST(getChild, smallTree)
 }
 
 
-/// Test insert when taking in only the same character
-TEST(child_existance, smallTree)
+
+TEST(childrenExistance, smallTree)
 {
+    /* We create our small tree to test on. */ 
+
     ClusterParse test; 
     test.insert(0, 2);
     test.insert(1, 2); 
@@ -289,9 +381,10 @@ TEST(child_existance, smallTree)
     test.insert(3, 4);
     test.insert(4, 5); 
 
-    //Test that getParent works on a small tree... 
+    /* Test that child existance functions work
+     *     on a small tree. */ 
 
-    //First, we check on the leaves... 
+    /* First, we check on the leaves... */ 
     assert(test.leftChild(0) == false); 
     assert(test.rightChild(0) == false); 
     assert(test.rightChild(1) == false); 
@@ -299,21 +392,24 @@ TEST(child_existance, smallTree)
     assert(test.leftChild(3) == false); 
     assert(test.rightChild(3) == false);
 
-    //Then the ones with one child... (it should be the left)
+    /* Then the ones with one child... (it should be the left) */ 
 
     assert(test.leftChild(4) == true); 
     assert(test.rightChild(3) == false); 
 
-    //Then the ones with two... 
+    /* Then the ones with two...  */ 
     assert(test.rightChild(2) == true); 
     assert(test.leftChild(2) == true); 
     assert(test.rightChild(5) == true);
     assert(test.leftChild(5) == true); 
 
 }
-
-TEST(parent, fullTree){
-    ClusterParse test = fileTestTree(); 
+/* Tests the getParent function for the 
+ *     tree generated from the test1 file. */ 
+TEST(parent, fullTree1){
+    /* Create the tree to test on... */ 
+    ClusterParse test = fullTree1(); 
+    /* And test it. */ 
     assert(test.getParent(15) == 18); 
     assert(test.getParent(17) == 18);
     assert(test.getParent(13) == 15); 
@@ -325,9 +421,12 @@ TEST(parent, fullTree){
     assert(test.getParent(7) == 12);
 }
 
-TEST(children, fullTree){
-    ClusterParse test = fileTestTree(); 
-
+/* Tests the isChild function for the 
+ *     tree generated from the test1 file. */ 
+TEST(children, fullTree1){
+    /* Create the tree to test on... */ 
+    ClusterParse test = testTree1(); 
+    /* And test it. */ 
     assert(test.isChild(15, 18));
     assert(test.isChild(7, 12)); 
     assert(test.isChild(3, 12)); 
@@ -342,8 +441,6 @@ TEST(children, fullTree){
     assert(test.isChild(5, 13));
 }
 
-// test to make sure that formatOutput and formatOutputVector return the same
-// vector
 TEST(formatfunctions, small)
 {
     ClusterParse test;
