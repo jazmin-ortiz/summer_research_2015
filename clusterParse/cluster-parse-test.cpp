@@ -465,6 +465,100 @@ TEST(children, fullTree1){
     assert(test.isChild(5, 13));
 }
 
+/* Checks that getLeaves  works for a small stick with a single leaf. */
+TEST(getLeaves, smallStick){
+    ClusterParse test = smallStickTree();
+    vector<size_t> testVector;
+    size_t root = test.getRoot();
+    std::vector<size_t> result = test.getLeaves(testVector, root);
+
+    /* We check that the output of getLeaves for a stick with a
+     *     single leaf is the single number that we expect. */
+    assert(result.size() == 1);
+    assert(result[0] == 0);
+}
+
+/* Checks that getLeaves works for a a tree made from the file test1.
+ *     with no remapping. */
+TEST(getLeaves, fullTree){
+    ClusterParse test = fullTree1();
+    /* We are not interested in checking remapping at this point, so we
+     *     pass an empty vector as the argument to getLeaves. */
+    vector<size_t> testVector;
+    size_t root = test.getRoot();
+    vector<size_t> result = test.getLeaves(testVector, root);
+
+    /* We get a vector to check against. */
+    vector<size_t> checkVector = result_fullTree1();
+
+    /* We perform a preliminary check to make sure our vectors are the
+     *     same size... */
+    assert(checkVector.size() == result.size());
+
+    /* Then we check that every element in our result and the expected
+     *     result are the same. */
+    for (size_t i = 0; i < checkVector.size(); ++i){
+        assert(result[i] == checkVector[i]);
+    }
+}
+
+/* Checks that getLeaves works for a a tree made from the file test2
+ *    with no remapping. */
+TEST(getLeaves, fullTree2){
+        ClusterParse test = fullTree2();
+    /* We are not interested in checking remapping at this point, so we
+     *     pass an empty vector as the argument to getLeaves. */
+    vector<size_t> testVector;
+     size_t root = test.getRoot();
+     vector<size_t> result = test.getLeaves(testVector, root);
+    /* We get a vector to check against. */
+    vector<size_t> checkVector = result_fullTree2();
+
+    /* We perform a preliminary check to make sure our vectors are the
+     *     same size... */
+    assert(checkVector.size() == result.size());
+
+    /* Then we check that every element in our result and the expected
+     *     result are the same. */
+    for (size_t i = 0; i < checkVector.size(); ++i){
+        assert(result[i] == checkVector[i]);
+    }
+}
+
+
+/* Check that getLeaves works on the edge case of a large
+ *     (500 node) stick without remapping.*/
+TEST(getLeaves, largeStick){
+    ClusterParse test = largeStickTree();
+
+    /* Because we don't want to remap anything, we pass an empty
+     *     vector. */
+    vector<size_t> testVector;
+    size_t root = test.getRoot();
+    std::vector<size_t> result = test.getLeaves(testVector, root);
+
+    assert(result.size() == 1);
+    assert(result[0] == 0);
+}
+
+/* Checks the result of formatOutput for
+ *     a larger, balanced tree. */
+TEST(getLeaves, balancedTree){
+    ClusterParse test = balancedTree();
+    /* Again, we don't want to remap anything, so we pass
+     *     an empty vector. */
+    vector<size_t> testVector;
+    size_t root = test.getRoot();
+    std::vector<size_t> result = test.getLeaves(testVector, root);
+
+    /* Because of the way we constructed our balanced tree,
+     *     the leaves should come out consecutively.  */
+    assert(result.size() == 8);
+    for (size_t i = 0; i < result.size(); ++i){
+        assert(result[i] == i);
+    }
+}
+
 TEST(formatfunctions, small)
 {
     ClusterParse test;
