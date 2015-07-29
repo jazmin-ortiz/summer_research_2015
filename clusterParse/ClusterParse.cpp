@@ -38,6 +38,7 @@ void ClusterParse::setChild(size_t child, size_t parent){
 
     if (numNodes_ > parent){
         cout << "Error: parent node does not exist." << endl; 
+        std::cout << "this check (setChild)" << endl; 
     }
     //If there is no left child...
     if (leftChild(parent) == false){
@@ -338,13 +339,16 @@ vector<size_t> ClusterParse::formatOutput(vector<size_t> mapping){
      * order */ 
     if (mapping.size() == 0){
         return *leafList; 
+    } 
+    if (mapping.size() != leafList->size()){
+        std::cout << "Mapping vector invalid-- not the same size as formatOutput vector" << std::endl; 
     }
     for (size_t i = 0; i < leafList->size(); ++i){
         (*leafList)[i] = mapping[(*leafList)[i]]; 
-        
     }
-    return *leafList;  
+    return *leafList; 
 }
+
 
 /* Traverses the tree in order, as a helper function for formatOutput.  It 
  *     pushes each node that it encounters onto the back of a vector, and 

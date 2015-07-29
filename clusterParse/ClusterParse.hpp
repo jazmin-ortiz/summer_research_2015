@@ -146,6 +146,7 @@ private:
     /* Sets the "parent" data member of the child node to the index passed. */
     void setParent(std::size_t child, std::size_t parent);
 
+ 
 
     std::vector<Node> clusterTree_; /* Contains the data structure of the
                                        * tree within an array. */
