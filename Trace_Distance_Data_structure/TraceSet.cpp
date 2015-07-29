@@ -357,10 +357,10 @@ size_t TraceSet::total_seek_distance()
 
     }
 
-  }
+    ++current_it;
+    ++next_it;
 
-  ++current_it;
-  ++next_it;
+  }
 
   return total_distance;
 
