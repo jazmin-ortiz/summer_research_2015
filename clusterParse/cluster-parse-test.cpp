@@ -256,14 +256,14 @@ TEST(formatOutput, fullTree){
 /* Checks that formatOutput works for a a tree made from the file test2
  *    with no remapping. */
 TEST(formatOutput, fullTree2){
-        ClusterParse test = fileTestTree2();
+        ClusterParse test = fullTree2();
     /* We are not interested in checking remapping at this point, so we 
      *     pass an empty vector as the argument to formatOutput. */  
     vector<size_t> testVector; 
     vector<size_t> result = test.formatOutput(testVector); 
 
     /* We get a vector to check against. */ 
-    vector<size_t> checkVector = result_fullTree2()
+    vector<size_t> checkVector = result_fullTree2();
 
     /* We perform a preliminary check to make sure our vectors are the
      *     same size... */ 
@@ -313,13 +313,13 @@ TEST(OutputRemap, fullTree){
 
     /* We create a remapping vector that remaps everything to itself
      *    multiplied by 13. */  
-    vector<size_t testVector; 
+    vector<size_t> testVector; 
     for (size_t i = 0; i < 10; ++i){
         testVector[i] = i * 13; 
     }
 
     /* We remap using that output.  */ 
-    result = test.formatOutput(testVector);
+    vector<size_t> result = test.formatOutput(testVector);
     vector<size_t> checkVector = result_fullTree1(); 
     /*  We check our remapping worked against our result_fullTree1 vector. */
     for (size_t i = 0; i < result.size(); ++i){
@@ -425,7 +425,7 @@ TEST(parent, fullTree1){
  *     tree generated from the test1 file. */ 
 TEST(children, fullTree1){
     /* Create the tree to test on... */ 
-    ClusterParse test = testTree1(); 
+    ClusterParse test = fullTree1(); 
     /* And test it. */ 
     assert(test.isChild(15, 18));
     assert(test.isChild(7, 12)); 
