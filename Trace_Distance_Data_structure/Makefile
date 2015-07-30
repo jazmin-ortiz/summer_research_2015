@@ -50,7 +50,7 @@ TraceSet.o: TraceSet.hpp TraceSet.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c TraceSet.cpp
 
 trace-set-test.o: trace-set-test.cpp 
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c trace-set-test.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c trace-set-test.cpp	
 
 traceloader.o: traceloader.cpp TraceSet.hpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c traceloader.cpp
