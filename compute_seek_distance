@@ -1,0 +1,113 @@
+#! /bin/zsh
+# Author: Jazmin Ortiz
+#
+# Description: This is a script that was written to take in a list
+# of accesses of LBAs from a trace and then find out information
+# concerning the total seek distance and how it can be changed based
+# upon how LBAs are rearranged on disk based upon reordering LBAS
+# that occur frequently in the list. This script will output a file
+# the first line will be the inital total seek distance, all of the following
+# lines will contain two columns, the first column will be a number which is
+# how many frequent LBAs were rearranged and the second column will contain the
+# total seek distance after those LBAs were rearranged.
+#
+# Please note that the disk is represented as a 1 d array and that
+# here the total seek distance is the sum total of the absolute
+# value of the difference of the locations of the LBAS that are
+# accessed consecutively.
+
+usage="Usage:
+              -d <Directory> | This flag followed by the argument Directory
+                               allows the user to specify the path to the
+                               directory in which to run this script. If
+                               this flag is not used then the script
+                               will be run in the current directory.
+
+              -f <File>      | This flag followed by the argument File
+                               specifies the file from which contains the list
+                               of accesses that should be evaluated.
+
+              -n <Num>       | This flag followed by the argument Num allows the
+                               user the specify the reordering of the 1d
+                               representation of the disk so that the top Num
+                               most frequent LBAs are placed consecutively from
+                               most to least frequent at the begining of the
+                               disk.
+
+              -i <Num>       | This flag followed by the argument Num allows the
+                               user to specify a total number of times to
+                               calculate the seek distance. The script will
+                               partition the total frequent LBAs into Num even
+                               sized parts, the the script will first find the
+                               total seek distance when the partion with the
+                               top most frequent LBAs is put at the front, next
+                               it will compute the total seek distance with the
+                               2 partitions that contain the most frequent of
+                               the frequent LBAs, the script will continue in
+                               this manner until the total seek distance using
+                               all the partitions has been calculated.
+
+              NOTE             Please note that if the flag -f followed by
+                               the file name is not included that the script
+                               will not run."
+
+# Please note that if the -d flag followed by a directory is not specified then
+# the directory checked will be the current directory and if the -n or -i flags
+# is not specified that only the 1000 most frequent LBAs will be rearranged.
+DIRECTORY=.
+NUMBER=1000
+FILE="unassigned"
+while true; do
+  case $1 in
+    -d ) shift
+         DIRECTORY=$1
+         shift
+         ;;
+
+    -n) shift
+        NUMBER=$1
+        shift
+        ;;
+
+    -f ) shift
+         FILE=$1
+         break
+         ;;
+
+     * ) echo -e $usage
+         exit
+  esac
+done
+
+################################## FUNCTIONS ###################################
+# This function creates a .txt file called frequent_LBAs.txt that contains all
+# the LBAS ordered from most to least frequent
+function sort_frequent_LBAs
+{
+
+    sort ${FILE} | uniq -c | sort -r | awk '{print $2}' '-' > frequent_LBAs.txt
+
+}
+
+############### CODE TO GENERATE RETURNED FILE ##############################
+
+# Checks to make sure that the user specified directory is a valid
+# directory, if it is not, exits the script otherwise cd to the specified
+# valid directory.
+if [ ! -d $DIRECTORY ]
+  then
+  echo "The directory entered is not a valid directory."
+  exit
+else
+  cd $DIRECTORY
+fi
+
+# Checks to make sure that the user specified file is a valid
+# file, if it is not, exits the script otherwise cd to the specified
+# valid directory.
+if [ ! -f $FILE ]
+  then
+  echo "The file entered is not a file."
+  exit
+fi
+
