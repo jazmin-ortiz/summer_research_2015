@@ -8,24 +8,27 @@ CXX	    =	clang++
 # disable its use.
 CPPFLAGS += -I. -DGTEST_HAS_PTHREAD=0
 
-TARGETS 	    =	post-cluto
-CLUTO_OBJS	=	postcluto.o cluster_parse/ClusterParse.o trace_set/TraceSet.o
+TARGETS 	    =	post_cluto/post-cluto
+CLUTO_OBJS	=	post_cluto/postcluto.o cluster_parse/ClusterParse.o trace_set/TraceSet.o
 
 # ----- Make Rules -----
 
 all:	$(TARGETS)
 
-post-cluto: $(CLUTO_OBJS)
+post_cluto/post-cluto: $(CLUTO_OBJS)
 	$(CXX) $(LDFLAGS) $(LIBS) $(CXXFLAGS) -o $@ $(CLUTO_OBJS)
 
 clean: 
 	rm -f $(TARGETS) $(CLUTO_OBJS)
 
-TraceSet.o:  trace_set/TraceSet.hpp trace_set/TraceSet.cpp
+trace_set/TraceSet.o:  trace_set/TraceSet.hpp trace_set/TraceSet.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c trace_set/TraceSet.cpp
+	mv TraceSet.o trace_set
 
-ClusterParse.o:
+cluster_parse/ClusterParse.o:
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c cluster_parse/ClusterParse.cpp
+	mv ClusterParse.o cluster_parse
 
-postcluto.o: postcluto.cpp trace_set/TraceSet.hpp cluster_parse/ClusterParse.hpp
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c postcluto.cpp
+postcluto.o: post_cluto/postcluto.cpp trace_set/TraceSet.hpp cluster_parse/ClusterParse.hpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c post_cluto/postcluto.cpp
+	mv postcluto.o post_cluto
