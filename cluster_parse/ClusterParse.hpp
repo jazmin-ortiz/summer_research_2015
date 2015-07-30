@@ -111,7 +111,7 @@ public:
     /*  Reads in from a file specified. */
     void readIn(std::ifstream& inputstream, bool test);
 
-    std::vector<size_t> readRemap(std::ifstream& inputstream); 
+    std::vector<std::size_t> readRemap(std::ifstream& inputstream); 
 
     /* Creates a vector a size_ts in the order of leaves on the tree.  
      *     Created to pass the vector to the TraceSet data structure. */ 
@@ -127,11 +127,11 @@ public:
      *     of the Treefile format are given by Cluto: A clustering toolkit.*/
     std::fstream makeTreeFile();
 
-    /*
-     * A function that returns a vector of size_ts that represent the leaf nodes
-     *      of the tree and thier order in the tree which is defined by thier
-     *      parent. */
-    std::vector<std::size_t>& getLeaves(std::vector<std::size_t>& leaves, std::size_t here);
+   /*
+    * A function that returns a vector of size_ts that represent the leaf nodes
+    *      of the tree and thier order in the tree which is defined by thier
+    *      parent. */
+  std::vector<std::size_t>& getLeaves(std::vector<std::size_t>& leaves, std::size_t here);
 
 private:
 

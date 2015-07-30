@@ -332,6 +332,9 @@ void ClusterParse::readIn(ifstream& inputstream, bool test)
     inputstream.close();
 }
 
+/* Gets a vector of frequently used LBAs from a textfile (with one number per line).
+ *     The index of the line corresponds to the number which is output by cluto; the  
+ *     the number on the line is the actual LBA. */ 
 vector<size_t> ClusterParse::readRemap(ifstream& inputstream)
 {
     /* The most recently read character and an accumulator to hold the
@@ -365,6 +368,9 @@ vector<size_t> ClusterParse::readRemap(ifstream& inputstream)
     return mapping; 
 }
 
+/* Returns a vector of every leaf within the tree in the order that it appears (from )
+ *     left to right.  Also remaps that according to a vector passed as an argument.  
+ *     If the vector is empty, then it does not remap. */ 
 vector<size_t> ClusterParse::formatOutput(vector<size_t> mapping){
     vector<size_t>* leafList = new vector<size_t>; 
     traverseTree(numNodes_ , leafList); 
@@ -439,21 +445,30 @@ std::fstream ClusterParse::makeTreeFile()
  */
 vector<size_t>& ClusterParse::getLeaves(vector<size_t>& leaves, size_t here)
 {
+
   Node current = clusterTree_[here];
 
   if (current.leftChild_) {
+
     getLeaves(leaves, getLeftChild(here));
+
   }
 
   if (current.rightChild_) {
+
     getLeaves(leaves, getRightChild(here));
+
+
   }
 
   // make sure that the current node is actually a leaf
   else if(current.leftChild_ == 0 && current.rightChild_ == 0) {
+
     leaves.push_back(here);
+
   }
 
   return leaves;
+
 }
 
