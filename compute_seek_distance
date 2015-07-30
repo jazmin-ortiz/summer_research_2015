@@ -17,15 +17,18 @@
 # accessed consecutively.
 
 usage="Usage:
+              This script's first argument is the name of a .txt file that
+              should be a list of accesses of LBAs. Below are optional flags
+              that can be used to specify what frequent LBAs to consider. If
+              no argument is optional argument is given the original total seek
+              distance and the total seek distance where the top 1000 LBAs are
+              moved to the front will be calculated.
+
               -d <Directory> | This flag followed by the argument Directory
                                allows the user to specify the path to the
                                directory in which to run this script. If
                                this flag is not used then the script
                                will be run in the current directory.
-
-              -f <File>      | This flag followed by the argument File
-                               specifies the file from which contains the list
-                               of accesses that should be evaluated.
 
               -n <Num>       | This flag followed by the argument Num allows the
                                user the specify the reordering of the 1d
@@ -47,35 +50,44 @@ usage="Usage:
                                this manner until the total seek distance using
                                all the partitions has been calculated.
 
-              NOTE             Please note that if the flag -f followed by
-                               the file name is not included that the script
-                               will not run."
+                                                                        "
+# This make sure that a file is given as input
+if [ -z $1 ]
+  then
+    echo "No file was passed"
+    echo -e $usage
+  exit
+fi
 
 # Please note that if the -d flag followed by a directory is not specified then
 # the directory checked will be the current directory and if the -n or -i flags
 # is not specified that only the 1000 most frequent LBAs will be rearranged.
 DIRECTORY=.
 NUMBER=1000
-FILE="unassigned"
+NUM_ITERATIONS=0
+FILE=$1
+shift
 while true; do
   case $1 in
+
     -d ) shift
          DIRECTORY=$1
          shift
          ;;
 
-    -n) shift
-        NUMBER=$1
-        shift
-        ;;
-
-    -f ) shift
-         FILE=$1
+    -n ) shift
+         NUMBER=$1
          break
          ;;
 
-     * ) echo -e $usage
-         exit
+    -i ) shift
+         NUM_ITERATIONS=$1
+         echo $1
+         break
+         ;;
+
+     * ) break
+
   esac
 done
 
@@ -89,6 +101,14 @@ function sort_frequent_LBAs
 
 }
 
+# This function takes in a number num, and creates a file top_freq_LBAs.txt and
+# puts the top num frequent LBAs from the frequent_LBAs.txt in this file
+function get_top_freq_LBAS num
+{
+    num=$1
+    frequent_LBAs.txt | head -n $num > top_freq_LBAs.txt
+}
+
 ############### CODE TO GENERATE RETURNED FILE ##############################
 
 # Checks to make sure that the user specified directory is a valid
@@ -96,18 +116,23 @@ function sort_frequent_LBAs
 # valid directory.
 if [ ! -d $DIRECTORY ]
   then
-  echo "The directory entered is not a valid directory."
-  exit
-else
-  cd $DIRECTORY
+    echo "The directory entered is not a valid directory."
+    echo -e $usage
+    exit
+  else
+    cd $DIRECTORY
 fi
 
-# Checks to make sure that the user specified file is a valid
-# file, if it is not, exits the script otherwise cd to the specified
-# valid directory.
+# Checks to make sure that the file specified is valid, if it is not,
+# it prints out an error message and usage and exits the script.
 if [ ! -f $FILE ]
   then
-  echo "The file entered is not a file."
+    echo "The file entered is not a file."
+    echo -e $usage
   exit
 fi
 
+for (( iterations=0; iterations < NUM_ITERATIONS; iterations+=1 ))
+do
+    echo $iterations
+done
