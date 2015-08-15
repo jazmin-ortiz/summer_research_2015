@@ -23,23 +23,22 @@ int main( int argc, char* argv[])
     string freqLBASeq; 
     bool calcInitial; 
     for (int i = 1; i < argc; ++i){
-        if (i + 1 != argc){
-            cout << argv[i] << endl; 
+        if (i + 1 != argc){ 
             if (!strcmp(argv[i], "-t")){
-                file_to_load = argv[i + 1];
-                cout << "set file to load to: " << LBAmapping << endl; 
+                file_to_load = argv[i + 1]; 
             }
             if (!strcmp(argv[i], "-l")){
-                traceName = argv[i + 1]; 
-                cout << "set LBA sequence file to: " << traceName << endl; 
+                freqLBASeq = argv[i + 1];  
             }
-            if (!strcmp(argv[i], -s)){
+            if (!strcmp(argv[i], "-s")){
                 calcInitial = 1; 
 
             }
         }
     }
-
+    if (!strcmp(argv[argc - 1], "-s")){
+    	calcInitial = 1; 
+    }
     // Creates fstream objects which hold the contents of the
     // files input by the user.
     ifstream tracefile(file_to_load);
@@ -68,7 +67,7 @@ int main( int argc, char* argv[])
 
         else{
             trace.change_locations(trace.readLBAs(LBAFile), 0);
-            cout << trace.total_seek_distance() << endl;
+            cout << trace.total_seek_distance() << endl; 
         }
     }
   return 0;
