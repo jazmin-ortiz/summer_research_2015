@@ -21,7 +21,7 @@ int main()
 {
 
   // Asks for a tracefile
-  cout << "Please choose a trace file to load. " << endl; 
+  cout << "Please choose a trace file to load. " << endl;
   // Reads the name of a trace file and puts it into string file_to_load
   string file_to_load;
   cin >> file_to_load;
