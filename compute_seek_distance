@@ -92,12 +92,12 @@ while true; do
 done
 
 ################################## FUNCTIONS ###################################
-# This function creates a .txt file called frequent_LBAs.txt that contains all
+# This function creates a .txt file called ordered_LBAs.txt that contains all
 # the LBAS ordered from most to least frequent
-function sort_frequent_LBAs
+function order_LBAs
 {
 
-    sort ${FILE} | uniq -c | sort -r | awk '{print $2}' '-' > frequent_LBAs.txt
+    sort ${FILE} | uniq -c | sort -r | awk '{print $2}' '-' > ordered_LBAs.txt
 
 }
 
@@ -132,7 +132,23 @@ if [ ! -f $FILE ]
   exit
 fi
 
-for (( iterations=0; iterations < NUM_ITERATIONS; iterations+=1 ))
-do
-    echo $iterations
-done
+$(order_LBAS)
+
+if [ $NUM_ITERATIONS -ne 0]
+then
+    wc -l ordered_LBA.txt > num_LBAS
+    ((partition_size=$num_LBAs / $NUM_ITERATIONS))
+    LBAs_to_use=0
+    for (( iterations=0; iterations < NUM_ITERATIONS; iterations+=1 ))
+    do
+        ((LBAs_to_use+=partition_size))
+        #   ((x=$iterations / $NUM_ITERATIONS))
+        $(get_top_freq_LBAs) $LBAs_to_use
+        ./traceset-commandline.cpp $FILE frequent_LBAs.txt
+        echo $LBAS_to_use
+        echo "DO C++ STUFF"
+    done
+else
+    echo "DO C++ STUFF"
+    
+ 

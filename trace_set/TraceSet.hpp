@@ -1,3 +1,4 @@
+
 /**
 * TraceSet.hpp
 *
@@ -149,7 +150,7 @@ public:
   std::size_t total_seek_distance();
 
   /// This function takes in a vector of size_ts that are LBAs in the
-  /// mapLBA_ vector and a size_t start, where the order of the LBAs in
+  /// mapLBA_ vector and a size_t start, where the ordeor of the LBAs in
   /// the vector represents a reordering of the locations that are associated
   /// with these LBAs.
   ///

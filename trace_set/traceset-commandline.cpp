@@ -57,12 +57,10 @@ int main(int argc, const char** argv)
 
     trace.readIn(tracefile);
 
-    cout << "Total initial seek distance is: " ;
-    cout << trace.total_seek_distance() << endl;
+    cout << trace.total_seek_distance() << " ";
 
     trace.change_locations(trace.readLBAs(frequentLBAs), 0);
 
-    cout << "Total final seek distance is:   " ;
     cout << trace.total_seek_distance() << endl;
 
   }
