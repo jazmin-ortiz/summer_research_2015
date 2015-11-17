@@ -1,4 +1,3 @@
-
 /**
 * TraceSet.hpp
 *

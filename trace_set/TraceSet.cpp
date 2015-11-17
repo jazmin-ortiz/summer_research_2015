@@ -169,7 +169,6 @@ void TraceSet::insert(string LBA_to_add)
  */
 void TraceSet::readIn(ifstream& inputstream)
 {
-
   char c;
   string current_LBA = "";
 
@@ -177,7 +176,7 @@ void TraceSet::readIn(ifstream& inputstream)
 
     // Makes sure that streamn closes if eof char is seen
     if (inputstream.eof()){
-
+      inputstream.close();
       return;
 
     }
@@ -185,11 +184,8 @@ void TraceSet::readIn(ifstream& inputstream)
     // the current LBA has been completed and if so inserts it into the
     // Sequence_ vector.
     else if ( c == '\n' ) {
-
       insert(current_LBA);
       current_LBA = "";
-
-
     }
 
     // If a newline char has not been seen continues to push chars onto
@@ -199,9 +195,7 @@ void TraceSet::readIn(ifstream& inputstream)
       current_LBA.push_back(c);
 
     }
-
   }
-
 }
 
 /**
